@@ -24,9 +24,8 @@ Un backend moderno construido con Node.js, TypeScript, Express y TypeORM para el
 ## 🛠️ Instalación
 
 1. **Clonar el repositorio**
-
    ```bash
-   git clone https://github.com/rodri542/verticals-next-generations-node-back.git
+   git clone https://github.com/Alebat-Education/verticals-next-generations-node-back.git
    cd verticals-next-generations-node-back
    ```
 

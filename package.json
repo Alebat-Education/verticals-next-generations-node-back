@@ -28,12 +28,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rodri542/verticals-next-generations-node-back.git"
+    "url": "https://github.com/Alebat-Education/verticals-next-generations-node-back.git"
   },
   "bugs": {
-    "url": "https://github.com/rodri542/verticals-next-generations-node-back/issues"
+    "url": "https://github.com/Alebat-Education/verticals-next-generations-node-back/issues"
   },
-  "homepage": "https://github.com/rodri542/verticals-next-generations-node-back#readme",
+  "homepage": "https://github.com/Alebat-Education/verticals-next-generations-node-back#readme",
   "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
