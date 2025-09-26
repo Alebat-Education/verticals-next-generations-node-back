@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import app from './app';
-import { CONFIG } from './config';
+import app from '@/app';
+import { CONFIG } from '@config/index';
 
 async function main() {
   try {
