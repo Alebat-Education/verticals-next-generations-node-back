@@ -1,6 +1,6 @@
-name: "🔒 Security Issue"
+name: "🔒 Bug Report - Security"
 description: Reporta vulnerabilidades o problemas de seguridad (CONFIDENCIAL)
-labels: ["security", "vulnerability", "urgent"]
+labels: ["security", "vulnerability", "urgent", "type: bug", "status: backlog", "priority: planning"]
 body:
   - type: markdown
     attributes:

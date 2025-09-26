@@ -1,6 +1,6 @@
 name: "🐞 Bug Report - Backend API"
 description: Reporta un error en la API backend
-labels: ['bug', 'backend', 'api']
+labels: ['bug', 'backend', 'api', 'type: bug', 'status: backlog', 'priority: planning']
 body:
   - type: markdown
     attributes:

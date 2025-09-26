@@ -1,6 +1,6 @@
 name: "🚀 Feature Request - Backend API"
 description: Sugiere una nueva funcionalidad o mejora para la API backend
-labels: ["enhancement", "backend", "api"]
+labels: ["enhancement", "backend", "api", "type: feature", "status: backlog", "priority: planning"]
 body:
   - type: markdown
     attributes:

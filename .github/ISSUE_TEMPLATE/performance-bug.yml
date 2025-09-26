@@ -1,6 +1,6 @@
-name: "⚡ Performance Issue"
+name: "⚡ Bug Report - Performance"
 description: Reporta problemas de rendimiento en la API backend
-labels: ["performance", "backend", "optimization"]
+labels: ["performance", "backend", "optimization", "type: bug", "status: backlog", "priority: planning"]
 body:
   - type: markdown
     attributes:

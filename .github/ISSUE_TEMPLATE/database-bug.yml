@@ -1,6 +1,6 @@
-name: "🗄️ Database Issue"
+name: "🗄️ Bug Report - Database"
 description: Reporta problemas específicos de base de datos y TypeORM
-labels: ["database", "typeorm", "mysql", "backend"]
+labels: ["database", "typeorm", "mysql", "backend", "type: bug", "status: backlog", "priority: planning"]
 body:
   - type: markdown
     attributes:
