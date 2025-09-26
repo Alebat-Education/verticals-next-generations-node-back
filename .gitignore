@@ -96,6 +96,7 @@ logs
 results
 node_modules
 .node_history
+package-lock.json
 
 ############################
 # Package managers
@@ -121,7 +122,6 @@ coverage
 # Strapi
 ############################
 
-.env
 license.txt
 exports
 .strapi
@@ -130,3 +130,10 @@ build
 .strapi-updater.json
 .strapi-cloud.json
 keys
+
+# Local env files
+.env
+.env.*
+!.env.example
+.vscode/*
+!.vscode/extensions.json
