@@ -2,8 +2,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "node",
     "target": "esnext",
     "lib": ["esnext"],
     "types": ["node"],
@@ -22,10 +22,19 @@
     "moduleDetection": "force",
     "baseUrl": "./src",
     "paths": {
+      "@/*": ["./*"],
+      "@config/*": ["config/*"],
+      "@constants/*": ["constants/*"],
       "@controllers/*": ["controllers/*"],
+      "@db/*": ["db/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@middleware/*": ["middleware/*"],
+      "@migrations/*": ["migrations/*"],
       "@models/*": ["models/*"],
-      "@utils/*": ["utils/*"],
-      "@services/*": ["services/*"]
+      "@routes/*": ["routes/*"],
+      "@services/*": ["services/*"],
+      "@types/*": ["types/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "include": ["src/**/*.ts"],
