@@ -13,8 +13,8 @@ Definen los endpoints de la API y conectan las URLs con los controladores.
 
 ```typescript
 import { Router } from 'express';
-import { studentsController } from '../controllers/studentsController';
-import { validateToken } from '../middleware/authMiddleware';
+import { studentsController } from '@controllers/studentsController';
+import { validateToken } from '@middleware/authMiddleware';
 
 const router = Router();
 
@@ -37,9 +37,9 @@ export default router;
 ```typescript
 // routes/index.ts
 import { Router } from 'express';
-import studentsRoutes from './studentsRoutes';
-import professorsRoutes from './professorsRoutes';
-import coursesRoutes from './coursesRoutes';
+import studentsRoutes from '@routes/studentsRoutes';
+import professorsRoutes from '@routes/professorsRoutes';
+import coursesRoutes from '@routes/coursesRoutes';
 
 const router = Router();
 
@@ -55,7 +55,7 @@ export default router;
 
 ```typescript
 import express from 'express';
-import routes from './routes';
+import routes from '@routes/index';
 
 const app = express();
 

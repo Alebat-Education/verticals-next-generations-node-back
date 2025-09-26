@@ -44,9 +44,9 @@ export const VALIDATION_RULES = {
 ## Cómo usarlas
 
 ```typescript
-import { HTTP_STATUS } from '../constants/httpStatus';
-import { ROLES } from '../constants/roles';
-import { VALIDATION_RULES } from '../constants/validation';
+import { HTTP_STATUS } from '@constants/httpStatus';
+import { ROLES } from '@constants/roles';
+import { VALIDATION_RULES } from '@constants/validation';
 
 async create(req: Request, res: Response): Promise<void> {
   if (req.user.role !== ROLES.ADMIN) {

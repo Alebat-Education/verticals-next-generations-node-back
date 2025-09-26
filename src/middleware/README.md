@@ -52,7 +52,7 @@ export const validateData = (req: Request, res: Response, next: NextFunction) =>
 ## Uso en rutas
 
 ```typescript
-import { validateToken, validateData } from './middleware/authMiddleware';
+import { validateToken, validateData } from '@middleware/authMiddleware';
 
 // Aplicar middleware a rutas específicas
 router.get('/protected', validateToken, controller.getProtectedData);

@@ -95,8 +95,8 @@ export const generateId = (): string => {
 
 ```typescript
 // En StudentsService - usar las funciones
-import { isValidEmail, isValidAge, cleanText } from '../utils/validation';
-import { capitalize } from '../utils/formatting';
+import { isValidEmail, isValidAge, cleanText } from '@utils/validation';
+import { capitalize } from '@utils/formatting';
 
 async create(data: any) {
   // Una línea limpia

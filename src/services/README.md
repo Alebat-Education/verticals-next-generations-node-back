@@ -13,8 +13,8 @@ Contienen la lógica de negocio de la aplicación. Es donde están las operacion
 
 ```typescript
 // services/StudentsService.ts
-import AppDataSource from '../db/database';
-import { Student } from '../models/studentsModel';
+import AppDataSource from '@db/database';
+import { Student } from '@models/studentsModel';
 
 export class StudentsService {
   private studentRepository = AppDataSource.getRepository(Student);
@@ -77,7 +77,7 @@ export class StudentsService {
 ## Uso en controladores
 
 ```typescript
-import { StudentsService } from '../services/StudentsService';
+import { StudentsService } from '@services/StudentsService';
 
 class StudentsController {
   private studentsService = new StudentsService();

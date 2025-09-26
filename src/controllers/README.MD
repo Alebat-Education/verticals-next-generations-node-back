@@ -12,8 +12,8 @@ Los controladores manejan las peticiones HTTP y devuelven respuestas. Conectan l
 ## Cómo se hace
 
 ```typescript
-import { Request, Response } from 'express';
-import { Student } from '../models/studentsModel';
+import type { Request, Response } from 'express';
+import { Student } from '@models/studentsModel';
 
 class StudentsController {
   constructor() {}
