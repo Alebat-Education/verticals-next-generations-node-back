@@ -135,5 +135,18 @@ keys
 .env
 .env.*
 !.env.example
+
+# IDE
 .vscode/*
 !.vscode/extensions.json
+*.code-workspace
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
