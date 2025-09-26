@@ -36,7 +36,7 @@ interface StudentResponse {
 
 ## Cómo usarlas
 
-````
+```ts
 
 ## Ejemplos comunes
 
@@ -67,4 +67,4 @@ interface DatabaseConfig {
   port: number;
   database: string;
 }
-````
+```
