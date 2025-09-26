@@ -1,0 +1,178 @@
+name: "🗄️ Database Issue"
+description: Reporta problemas específicos de base de datos y TypeORM
+labels: ["database", "typeorm", "mysql", "backend"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🗄️ Problema de Base de Datos
+        Reporta problemas relacionados con MySQL, TypeORM, migraciones o esquemas.
+
+  - type: dropdown
+    id: database-category
+    attributes:
+      label: Categoría del problema
+      description: ¿Qué tipo de problema de base de datos es?
+      options:
+        - Migration Issues
+        - TypeORM Entity/Repository
+        - Query Performance
+        - Connection Issues
+        - Schema Design
+        - Data Integrity
+        - Indexing
+        - Foreign Key Constraints
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Descripción del problema
+      description: |
+        Describe el problema de base de datos que estás experimentando
+      placeholder: |
+        La migración 20240101_create_users falla al ejecutar "pnpm migration:run"
+        debido a una constraint de foreign key que no puede ser creada.
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-message
+    attributes:
+      label: Mensaje de error
+      description: |
+        Error exacto devuelto por MySQL o TypeORM
+      placeholder: |
+        ```
+        QueryFailedError: ER_CANNOT_ADD_FOREIGN: Cannot add foreign key constraint
+        at QueryFailedError.TypeORMError [as constructor] (/node_modules/typeorm/error/TypeORMError.js:7:28)
+        at /node_modules/typeorm/driver/mysql/MysqlQueryRunner.js:299:25
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: entity-definition
+    attributes:
+      label: Definición de entidad (si aplica)
+      description: |
+        Código TypeScript de la entidad relacionada con el problema
+      placeholder: |
+        ```typescript
+        @Entity('users')
+        export class User {
+          @PrimaryGeneratedColumn()
+          id: number;
+
+          @Column({ unique: true })
+          email: string;
+
+          @OneToMany(() => Post, post => post.user)
+          posts: Post[];
+        }
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: migration-code
+    attributes:
+      label: Código de migración (si aplica)
+      description: |
+        Código de la migración que está causando problemas
+      placeholder: |
+        ```typescript
+        export class CreateUsers1640000000000 implements MigrationInterface {
+          public async up(queryRunner: QueryRunner): Promise<void> {
+            await queryRunner.createTable(new Table({
+              name: 'users',
+              columns: [
+                { name: 'id', type: 'int', isPrimary: true, isGenerated: true },
+                { name: 'email', type: 'varchar', length: '255', isUnique: true }
+              ]
+            }));
+          }
+        }
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: sql-query
+    attributes:
+      label: Query SQL problemática (si aplica)
+      description: |
+        La consulta SQL que está causando el problema
+      placeholder: |
+        ```sql
+        SELECT u.*, p.title 
+        FROM users u 
+        LEFT JOIN posts p ON u.id = p.user_id 
+        WHERE u.active = 1 
+        GROUP BY u.id;
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: database-schema
+    attributes:
+      label: Esquema de base de datos relevante
+      description: |
+        SHOW CREATE TABLE o descripción del esquema actual
+      placeholder: |
+        ```sql
+        CREATE TABLE `users` (
+          `id` int NOT NULL AUTO_INCREMENT,
+          `email` varchar(255) NOT NULL,
+          `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (`id`),
+          UNIQUE KEY `email` (`email`)
+        );
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: database-environment
+    attributes:
+      label: Información del entorno de base de datos
+      description: |
+        Detalles técnicos del entorno de MySQL
+      value: |
+        - **MySQL version:** 
+        - **TypeORM version:** 
+        - **Environment:** (development/production)
+        - **Database name:** 
+        - **Character set:** 
+        - **Storage engine:** 
+      placeholder: Completa la información del entorno
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Pasos para reproducir
+      description: |
+        ¿Cómo podemos reproducir este problema de base de datos?
+      placeholder: |
+        1. Ejecutar `pnpm migration:generate`
+        2. Ejecutar `pnpm migration:run`
+        3. Observar el error de foreign key constraint
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Comportamiento esperado
+      description: |
+        ¿Qué esperabas que ocurriera?
+      placeholder: |
+        La migración debería ejecutarse exitosamente creando las tablas
+        y relaciones sin errores de constraints.
+    validations:
+      required: true

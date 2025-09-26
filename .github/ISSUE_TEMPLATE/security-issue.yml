@@ -1,0 +1,158 @@
+name: "🔒 Security Issue"
+description: Reporta vulnerabilidades o problemas de seguridad (CONFIDENCIAL)
+labels: ["security", "vulnerability", "urgent"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🔒 Reporte de Seguridad
+        **IMPORTANTE:** Si es una vulnerabilidad crítica, considera reportarla de forma privada.
+        
+        Este template es para problemas de seguridad en la API backend.
+        Proporciona detalles técnicos pero evita información sensible.
+
+  - type: dropdown
+    id: security-category
+    attributes:
+      label: Tipo de problema de seguridad
+      description: ¿Qué tipo de vulnerabilidad o problema de seguridad identificaste?
+      options:
+        - Authentication/Authorization
+        - SQL Injection
+        - XSS (Cross-Site Scripting)
+        - CSRF (Cross-Site Request Forgery)
+        - Information Disclosure
+        - Input Validation
+        - JWT Token Issues
+        - CORS Configuration
+        - Rate Limiting
+        - Dependency Vulnerability
+        - Environment/Configuration
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad estimada
+      description: ¿Qué tan crítico consideras este problema?
+      options:
+        - Critical (Immediate attention required)
+        - High (Should be fixed soon)
+        - Medium (Should be addressed)
+        - Low (Minor security concern)
+        - Info (Security improvement suggestion)
+    validations:
+      required: true
+
+  - type: textarea
+    id: vulnerability-description
+    attributes:
+      label: Descripción de la vulnerabilidad
+      description: |
+        Describe el problema de seguridad sin incluir información sensible
+      placeholder: |
+        El endpoint /api/users permite acceso sin autenticación adecuada,
+        exponiendo información de usuarios que debería estar protegida.
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-endpoints
+    attributes:
+      label: Endpoints o componentes afectados
+      description: |
+        ¿Qué partes de la API están afectadas?
+      placeholder: |
+        - GET /api/users (expone emails de usuarios)
+        - POST /api/admin/users (sin verificación de rol admin)
+        - JWT middleware en /src/middleware/auth.ts
+    validations:
+      required: true
+
+  - type: textarea
+    id: potential-impact
+    attributes:
+      label: Impacto potencial
+      description: |
+        ¿Qué podría ocurrir si se explota esta vulnerabilidad?
+      placeholder: |
+        - Acceso no autorizado a datos de usuarios
+        - Escalación de privilegios
+        - Exposición de información sensible
+        - Posible compromiso de la base de datos
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Pasos para reproducir (si es seguro)
+      description: |
+        Pasos básicos para reproducir el problema (sin explotar la vulnerabilidad)
+      placeholder: |
+        1. Hacer request a GET /api/users sin token de autenticación
+        2. Observar que la API devuelve datos sin verificar permisos
+        3. Verificar que emails y datos sensibles son expuestos
+    validations:
+      required: false
+
+  - type: textarea
+    id: code-snippet
+    attributes:
+      label: Código relevante (si aplica)
+      description: |
+        Fragmento de código donde se identifica el problema
+      placeholder: |
+        ```typescript
+        // En userController.ts - falta verificación de autenticación
+        async getUsers(req: Request, res: Response) {
+          const users = await User.find(); // ❌ Sin verificar permisos
+          res.json(users); // ❌ Expone todos los datos
+        }
+        ```
+    validations:
+      required: false
+
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Solución sugerida
+      description: |
+        Si tienes ideas sobre cómo corregir el problema
+      placeholder: |
+        1. Agregar middleware de autenticación al endpoint
+        2. Implementar verificación de roles/permisos
+        3. Filtrar campos sensibles en la respuesta
+        4. Agregar rate limiting para prevenir abuso
+    validations:
+      required: false
+
+  - type: textarea
+    id: references
+    attributes:
+      label: Referencias o recursos
+      description: |
+        Enlaces a documentación, CVEs, o recursos relacionados
+      placeholder: |
+        - OWASP Top 10: https://owasp.org/www-project-top-ten/
+        - JWT Best Practices: https://tools.ietf.org/html/rfc8725
+        - Related CVE: CVE-2024-XXXXX
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: security-checklist
+    attributes:
+      label: Checklist de seguridad
+      description: Confirma que has seguido las mejores prácticas de reporte
+      options:
+        - label: He verificado que esto es realmente un problema de seguridad
+          required: true
+        - label: No he incluido credenciales reales o información sensible
+          required: true
+        - label: He considerado el impacto antes de hacer público este reporte
+          required: true
+        - label: He probado en un entorno de desarrollo, no en producción
+          required: false

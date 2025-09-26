@@ -1,0 +1,137 @@
+name: "⚡ Performance Issue"
+description: Reporta problemas de rendimiento en la API backend
+labels: ["performance", "backend", "optimization"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚀 Reporte de Performance
+        Ayúdanos a identificar y resolver problemas de rendimiento en la API.
+        Proporciona métricas específicas y detalles técnicos.
+
+  - type: dropdown
+    id: performance-area
+    attributes:
+      label: Área de performance afectada
+      description: ¿Dónde se detectó el problema de rendimiento?
+      options:
+        - API Response Time
+        - Database Queries
+        - Memory Usage
+        - CPU Usage
+        - Startup Time
+        - Concurrent Requests
+        - File I/O Operations
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: performance-description
+    attributes:
+      label: Descripción del problema
+      description: |
+        Describe el problema de rendimiento observado
+      placeholder: |
+        El endpoint GET /api/users tarda más de 5 segundos en responder
+        cuando hay más de 1000 usuarios en la base de datos.
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Métricas observadas
+      description: |
+        Proporciona métricas específicas: tiempos de respuesta, uso de memoria, etc.
+      placeholder: |
+        - **Response time:** 5.2s (esperado: <500ms)
+        - **Memory usage:** 512MB (normal: 128MB)
+        - **CPU usage:** 85% durante la request
+        - **Database query time:** 4.8s
+      value: |
+        - **Response time:** 
+        - **Memory usage:** 
+        - **CPU usage:** 
+        - **Database query time:** 
+    validations:
+      required: true
+
+  - type: textarea
+    id: endpoint-details
+    attributes:
+      label: Detalles del endpoint afectado
+      description: |
+        Información específica sobre el endpoint con problemas
+      placeholder: |
+        **Method:** GET
+        **Endpoint:** /api/users
+        **Query params:** ?limit=100&offset=0
+        **Load:** 50 concurrent users
+    validations:
+      required: false
+
+  - type: textarea
+    id: database-queries
+    attributes:
+      label: Consultas de base de datos involucradas
+      description: |
+        Si el problema está relacionado con queries SQL lentas
+      placeholder: |
+        ```sql
+        SELECT users.*, profiles.* 
+        FROM users 
+        LEFT JOIN profiles ON users.id = profiles.user_id 
+        WHERE users.active = 1
+        ORDER BY users.created_at DESC
+        LIMIT 100 OFFSET 0;
+        ```
+        
+        **Execution time:** 4.8s
+        **Rows examined:** 10,000
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment-load
+    attributes:
+      label: Información del entorno y carga
+      description: |
+        Detalles sobre el entorno donde se detectó el problema
+      value: |
+        - **Environment:** (development/staging/production)
+        - **Node.js version:** 
+        - **MySQL version:** 
+        - **Server specs:** (CPU, RAM)
+        - **Concurrent users:** 
+        - **Data volume:** (number of records)
+      placeholder: Completa la información del entorno
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Pasos para reproducir el problema
+      description: |
+        ¿Cómo podemos reproducir el problema de performance?
+      placeholder: |
+        1. Poblar la base de datos con 10,000 usuarios
+        2. Hacer 50 requests concurrentes a GET /api/users
+        3. Observar el tiempo de respuesta excesivo
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-solutions
+    attributes:
+      label: Posibles soluciones sugeridas
+      description: |
+        Si tienes ideas sobre cómo optimizar el rendimiento
+      placeholder: |
+        - Agregar índices en la tabla users (active, created_at)
+        - Implementar paginación más eficiente
+        - Usar cache Redis para consultas frecuentes
+        - Optimizar la query eliminando JOINs innecesarios
+    validations:
+      required: false
