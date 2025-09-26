@@ -1,20 +1,39 @@
 {
   "name": "verticals-next-generations-node-back",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend moderno con Node.js, TypeScript, Express y TypeORM para el proyecto Verticals Next Generations",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "dev:debug": "tsx watch --inspect src/index.ts",
     "build": "tsc -p tsconfig.json",
+    "build:clean": "rm -rf dist && pnpm build",
     "start": "node dist/index.js",
+    "start:prod": "NODE_ENV=production node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint 'src/**/*.{ts,js}'",
-    "lint:fix": "eslint 'src/**/*.{ts,js}' --fix",
+    "lint": "eslint \"src/**/*.{ts,js}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
     "format": "prettier --write 'src/**/*.{ts,js,json,md}'"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "node",
+    "typescript",
+    "express",
+    "typeorm",
+    "mysql",
+    "api",
+    "backend"
+  ],
+  "author": "rodri542",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rodri542/verticals-next-generations-node-back.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rodri542/verticals-next-generations-node-back/issues"
+  },
+  "homepage": "https://github.com/rodri542/verticals-next-generations-node-back#readme",
   "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
@@ -34,9 +53,11 @@
     "@typescript-eslint/parser": "^8.44.1",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-prettier": "^5.5.4",
     "prettier": "^3.6.2",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   }
 }
