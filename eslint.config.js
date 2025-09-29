@@ -9,6 +9,7 @@ export default [
   },
   {
     files: ['**/*.ts', '**/*.js'],
+    ignores: ['commitlint.config.ts'],
     languageOptions: {
       parser: parserTypeScript,
       parserOptions: {
@@ -96,6 +97,24 @@ export default [
     },
     rules: {
       'no-console': 'off',
+    },
+  },
+  {
+    files: ['commitlint.config.ts'],
+    languageOptions: {
+      parser: parserTypeScript,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      prettier: pluginPrettier,
+      '@typescript-eslint': pluginTypeScript,
+    },
+    rules: {
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 ];

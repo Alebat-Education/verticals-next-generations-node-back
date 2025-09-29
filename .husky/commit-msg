@@ -1,0 +1,30 @@
+#!/bin/sh
+# Commit message validation for Express.js Backend
+
+echo "📝 Validating commit message format..."
+
+# Run commitlint and capture output
+if ! npx --no -- commitlint --edit $1; then
+    printf "\n\e[31m"
+    printf "
+ ██████  ██████  ███    ███ ███    ███ ██ ████████     ███    ███ ███████  ██████  
+██      ██    ██ ████  ████ ████  ████ ██    ██        ████  ████ ██      ██       
+██      ██    ██ ██ ████ ██ ██ ████ ██ ██    ██        ██ ████ ██ ███████ ██   ███ 
+██      ██    ██ ██  ██  ██ ██  ██  ██ ██    ██        ██  ██  ██      ██ ██    ██ 
+ ██████  ██████  ██      ██ ██      ██ ██    ██        ██      ██ ███████  ██████  
+                                                                                   
+                                                                                   
+\n"
+    printf "❌ Commit message format is invalid! ❌\n\n"
+    printf "📚 Expected format: type(scope): description\n\n"
+    printf "📋 Examples:\n"
+    printf "   • feat(auth): add JWT authentication middleware\n"
+    printf "   • fix(controllers): correct validation in UserController\n"
+    printf "   • docs(api): update endpoint documentation\n"
+    printf "   • chore(deps): update project dependencies\n\n"
+    printf "🔗 More info: https://www.conventionalcommits.org/\n\n"
+    printf "\e[0m"
+    exit 1
+fi
+
+echo "✅ Commit message format is valid!"
