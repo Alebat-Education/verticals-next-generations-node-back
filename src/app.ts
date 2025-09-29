@@ -1,14 +1,13 @@
-import express from 'express';
+import express, { type Express, type Request, type Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
-import type { Request, Response } from 'express';
 
-const app = express();
+const app: Express = express();
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.send('Server started and READY!');
 });
 
