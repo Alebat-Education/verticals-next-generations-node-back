@@ -1,6 +1,7 @@
 import pluginPrettier from 'eslint-plugin-prettier';
 import pluginTypeScript from '@typescript-eslint/eslint-plugin';
 import parserTypeScript from '@typescript-eslint/parser';
+import pluginNode from 'eslint-plugin-node';
 
 export default [
   {
@@ -19,11 +20,6 @@ export default [
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        module: 'readonly',
-        require: 'readonly',
-        exports: 'readonly',
         global: 'readonly',
       },
     },
@@ -65,6 +61,27 @@ export default [
     },
   },
   {
+    files: ['**/*.js'],
+    plugins: {
+      node: pluginNode,
+    },
+    extends: ['plugin:node/recommended'],
+    rules: {
+      'node/no-unsupported-features/es-syntax': 'off',
+    },
+  },
+  {
+    files: ['**/*.ts'],
+    plugins: {
+      node: pluginNode,
+    },
+    rules: {
+      'node/no-missing-import': 'off',
+      'node/no-unpublished-import': 'off',
+      'node/no-unsupported-features/es-syntax': 'off',
+    },
+  },
+  {
     files: ['**/*.spec.ts', '**/*.test.ts'],
     languageOptions: {
       globals: {
@@ -76,6 +93,9 @@ export default [
         beforeEach: 'readonly',
         afterEach: 'readonly',
       },
+    },
+    rules: {
+      'no-console': 'off',
     },
   },
 ];

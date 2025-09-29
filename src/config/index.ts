@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 
-// Cargar variables de entorno
+// Load environment variables
 config();
 
 export const CONFIG = {
