@@ -1,4 +1,5 @@
 import express, { type Express, type Request, type Response } from 'express';
+import { SERVER_CONFIG, SERVER_MESSAGES } from '@/constants/server.js';
 import cors from 'cors';
 import morgan from 'morgan';
 
@@ -7,8 +8,8 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (_req: Request, res: Response) => {
-  res.send('Server started and READY!');
+app.get(SERVER_CONFIG.HOME, (_req: Request, res: Response) => {
+  res.send(SERVER_MESSAGES.READY);
 });
 
 export default app;

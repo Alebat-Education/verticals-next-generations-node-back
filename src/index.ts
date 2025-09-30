@@ -1,20 +1,22 @@
-import 'dotenv/config';
-import app from '@/app';
-import { CONFIG } from '@config/index';
+import app from '@/app.js';
+import { verifyPortAvailable } from '@utils/verifyPort.js';
+import { CONFIG } from '@config/index.js';
+import { SERVER_MESSAGES } from '@/constants/server.js';
+import { ERROR, ERROR_SERVER } from '@/constants/Errors/server.js';
 
-async function main() {
-  try {
-    app.listen(CONFIG.PORT, () => {
-      // eslint-disable-next-line no-console
-      console.log('HELLO WORLD! Server is running on port: ' + CONFIG.PORT);
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      // eslint-disable-next-line no-console
-      console.error('Error during initialization:', error.message);
-    }
+async function main(): Promise<void> {
+  const port: number = Number(CONFIG.PORT);
+  await verifyPortAvailable(port);
+  const server = app.listen(port);
+
+  server.once(SERVER_MESSAGES.LISTENING, () => {
+    process.stdout.write(SERVER_MESSAGES.STARTING(port));
+  });
+
+  server.once(ERROR, (err: string) => {
+    process.stderr.write(ERROR_SERVER(err));
     process.exit(1);
-  }
+  });
 }
 
-main();
+void main();
