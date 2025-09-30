@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 import type { BaseEntity, DeepPartial } from 'typeorm';
-import type { BaseService } from '@/services/GlobalService.js';
+import type { BaseService, EntityWithId } from '@/services/GlobalService.js';
 import type { ApiResponse, ApiErrorResponse, ApiSuccessResponse } from '@/interfaces/http.js';
 import { STATUS } from '@/constants/http.js';
 import {
@@ -13,7 +13,7 @@ import {
   SUCCESS_RESOURCES_RETRIEVED,
 } from '@/constants/errors/common.js';
 
-export abstract class BaseController<T extends BaseEntity> {
+export abstract class BaseController<T extends BaseEntity & EntityWithId> {
   protected service: BaseService<T>;
   protected resourceName: string;
 
@@ -24,7 +24,6 @@ export abstract class BaseController<T extends BaseEntity> {
 
   /**
    * Get all resources
-   * GET /
    */
   async findAll(_req: Request, res: Response): Promise<void> {
     try {
@@ -42,7 +41,6 @@ export abstract class BaseController<T extends BaseEntity> {
 
   /**
    * Get resource by ID
-   * GET /:id
    */
   async findOne(req: Request, res: Response): Promise<void> {
     try {
@@ -85,7 +83,6 @@ export abstract class BaseController<T extends BaseEntity> {
 
   /**
    * Create new resource
-   * POST /
    */
   async create(req: Request, res: Response): Promise<void> {
     try {
@@ -105,7 +102,6 @@ export abstract class BaseController<T extends BaseEntity> {
 
   /**
    * Update resource by ID
-   * PUT /:id
    */
   async update(req: Request, res: Response): Promise<void> {
     try {
@@ -150,7 +146,6 @@ export abstract class BaseController<T extends BaseEntity> {
 
   /**
    * Delete resource by ID
-   * DELETE /:id
    */
   async delete(req: Request, res: Response): Promise<void> {
     try {
