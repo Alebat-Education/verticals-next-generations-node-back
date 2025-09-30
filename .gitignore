@@ -136,11 +136,6 @@ keys
 .env.*
 !.env.example
 
-# IDE
-.vscode/*
-!.vscode/extensions.json
-*.code-workspace
-
 # TypeScript
 *.tsbuildinfo
 *.d.ts.map
