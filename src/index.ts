@@ -2,7 +2,7 @@ import app from '@/app.js';
 import { verifyPortAvailable } from '@utils/verifyPort.js';
 import { CONFIG } from '@config/index.js';
 import { SERVER_MESSAGES } from '@/constants/server.js';
-import { ERROR, ERROR_SERVER } from '@/constants/Errors/server.js';
+import { ERROR, ERROR_SERVER } from '@/constants/errors/server.js';
 
 async function main(): Promise<void> {
   const port: number = Number(CONFIG.PORT);
