@@ -20,23 +20,7 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["./*"],
-      "@config/*": ["config/*"],
-      "@constants/*": ["constants/*"],
-      "@controllers/*": ["controllers/*"],
-      "@db/*": ["db/*"],
-      "@interfaces/*": ["interfaces/*"],
-      "@middleware/*": ["middleware/*"],
-      "@migrations/*": ["migrations/*"],
-      "@models/*": ["models/*"],
-      "@routes/*": ["routes/*"],
-      "@services/*": ["services/*"],
-      "@types/*": ["types/*"],
-      "@utils/*": ["utils/*"]
-    }
+    "moduleDetection": "force"
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
