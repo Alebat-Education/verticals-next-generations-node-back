@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { SERVER_CONFIG } from '@/constants/server.js';
+import { SERVER_CONFIG } from '#constants/server.js';
 
 // Load environment variables
 config();

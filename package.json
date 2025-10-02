@@ -36,6 +36,20 @@
   },
   "homepage": "https://github.com/Alebat-Education/verticals-next-generations-node-back#readme",
   "type": "module",
+  "imports": {
+    "#config/*": "./src/config/*",
+    "#constants/*": "./src/constants/*",
+    "#controllers/*": "./src/controllers/*",
+    "#db/*": "./src/db/*",
+    "#interfaces/*": "./src/interfaces/*",
+    "#middleware/*": "./src/middleware/*",
+    "#migrations/*": "./src/migrations/*",
+    "#models/*": "./src/models/*",
+    "#routes/*": "./src/routes/*",
+    "#services/*": "./src/services/*",
+    "#types/*": "./src/types/*",
+    "#utils/*": "./src/utils/*"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
