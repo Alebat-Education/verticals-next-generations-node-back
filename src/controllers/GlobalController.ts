@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 import type { BaseEntity, DeepPartial } from 'typeorm';
-import type { BaseService, EntityWithId } from '@/services/GlobalService.js';
-import type { ApiResponse, ApiErrorResponse, ApiSuccessResponse } from '@/interfaces/http.js';
-import { STATUS } from '@/constants/http.js';
+import type { BaseService, EntityWithId } from '#services/GlobalService.js';
+import type { ApiResponse, ApiErrorResponse, ApiSuccessResponse } from '#interfaces/http.js';
+import { STATUS } from '#constants/http.js';
 import {
   ERROR_RESOURCE_NOT_FOUND,
   ERROR_INVALID_ID,
@@ -11,7 +11,7 @@ import {
   SUCCESS_RESOURCE_UPDATED,
   SUCCESS_RESOURCE_DELETED,
   SUCCESS_RESOURCES_RETRIEVED,
-} from '@/constants/errors/common.js';
+} from '#constants/errors/common.js';
 
 export abstract class BaseController<T extends BaseEntity & EntityWithId> {
   protected service: BaseService<T>;
