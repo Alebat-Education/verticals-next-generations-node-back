@@ -1,33 +1,27 @@
-name: "🔒 Bug Report - Security"
-description: Reporta vulnerabilidades o problemas de seguridad (CONFIDENCIAL)
-labels: ["security", "vulnerability", "urgent", "type: bug", "status: backlog", "priority: planning"]
+name: '🔒 Bug - Security'
+description: Vulnerabilidad o problema de seguridad (CONFIDENCIAL)
+labels: ['security', 'vulnerability', 'urgent', 'type: bug', 'status: backlog', 'priority: planning']
 body:
   - type: markdown
     attributes:
       value: |
         ## 🔒 Reporte de Seguridad
-        **IMPORTANTE:** Si es una vulnerabilidad crítica, considera reportarla de forma privada.
-        
-        Este template es para problemas de seguridad en la API backend.
-        Proporciona detalles técnicos pero evita información sensible.
+        **IMPORTANTE:** Si es crítico, considera reportarlo de forma privada primero.
+        No incluyas información sensible (passwords, tokens, etc.)
 
   - type: dropdown
     id: security-category
     attributes:
-      label: Tipo de problema de seguridad
-      description: ¿Qué tipo de vulnerabilidad o problema de seguridad identificaste?
+      label: Tipo de vulnerabilidad
       options:
         - Authentication/Authorization
         - SQL Injection
-        - XSS (Cross-Site Scripting)
-        - CSRF (Cross-Site Request Forgery)
+        - XSS/CSRF
         - Information Disclosure
         - Input Validation
-        - JWT Token Issues
-        - CORS Configuration
-        - Rate Limiting
+        - JWT Issues
+        - CORS/Rate Limiting
         - Dependency Vulnerability
-        - Environment/Configuration
         - Other
     validations:
       required: true
@@ -35,66 +29,48 @@ body:
   - type: dropdown
     id: severity
     attributes:
-      label: Severidad estimada
-      description: ¿Qué tan crítico consideras este problema?
+      label: Severidad
       options:
-        - Critical (Immediate attention required)
-        - High (Should be fixed soon)
-        - Medium (Should be addressed)
-        - Low (Minor security concern)
-        - Info (Security improvement suggestion)
+        - Critical
+        - High
+        - Medium
+        - Low
     validations:
       required: true
 
   - type: textarea
     id: vulnerability-description
     attributes:
-      label: Descripción de la vulnerabilidad
-      description: |
-        Describe el problema de seguridad sin incluir información sensible
+      label: ¿Qué vulnerabilidad encontraste?
+      description: Describe el problema SIN información sensible
       placeholder: |
-        El endpoint /api/users permite acceso sin autenticación adecuada,
-        exponiendo información de usuarios que debería estar protegida.
+        El endpoint /api/users permite acceso sin autenticación,
+        exponiendo emails de usuarios.
     validations:
       required: true
 
   - type: textarea
-    id: affected-endpoints
+    id: affected-components
     attributes:
-      label: Endpoints o componentes afectados
-      description: |
-        ¿Qué partes de la API están afectadas?
+      label: ¿Qué está afectado?
+      description: Endpoints, archivos o componentes afectados
       placeholder: |
-        - GET /api/users (expone emails de usuarios)
-        - POST /api/admin/users (sin verificación de rol admin)
-        - JWT middleware en /src/middleware/auth.ts
+        - GET /api/users
+        - /src/middleware/auth.ts
     validations:
       required: true
 
   - type: textarea
-    id: potential-impact
+    id: impact-and-steps
     attributes:
-      label: Impacto potencial
-      description: |
-        ¿Qué podría ocurrir si se explota esta vulnerabilidad?
+      label: Impacto y reproducción (opcional)
+      description: Qué podría pasar y cómo reproducirlo de forma segura
       placeholder: |
-        - Acceso no autorizado a datos de usuarios
-        - Escalación de privilegios
-        - Exposición de información sensible
-        - Posible compromiso de la base de datos
-    validations:
-      required: true
+        Impacto: Acceso no autorizado a datos de usuarios
 
-  - type: textarea
-    id: reproduction-steps
-    attributes:
-      label: Pasos para reproducir (si es seguro)
-      description: |
-        Pasos básicos para reproducir el problema (sin explotar la vulnerabilidad)
-      placeholder: |
-        1. Hacer request a GET /api/users sin token de autenticación
-        2. Observar que la API devuelve datos sin verificar permisos
-        3. Verificar que emails y datos sensibles son expuestos
+        Reproducir:
+        1. Request a GET /api/users sin token
+        2. La API devuelve datos sin verificar permisos
     validations:
       required: false
 
