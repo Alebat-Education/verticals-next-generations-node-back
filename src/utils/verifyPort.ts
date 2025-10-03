@@ -7,7 +7,7 @@ export async function verifyPortAvailable(port: number): Promise<void> {
 
   const server = createServer();
 
-  await new Promise<void>((resolve) => {
+  await new Promise<void>(resolve => {
     server.once(ERROR, (err: NodeJS.ErrnoException | null) => {
       if (err?.code === CODE_ADDRESS_IN_USE) return terminateAll(ERROR_PORT_IN_USE(port));
     });
