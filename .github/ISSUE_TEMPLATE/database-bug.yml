@@ -1,27 +1,22 @@
-name: "🗄️ Bug Report - Database"
-description: Reporta problemas específicos de base de datos y TypeORM
-labels: ["database", "typeorm", "mysql", "backend", "type: bug", "status: backlog", "priority: planning"]
+name: '🗄️ Bug - Database'
+description: Problema con base de datos, TypeORM o migraciones
+labels: ['database', 'typeorm', 'mysql', 'backend', 'type: bug', 'status: backlog', 'priority: planning']
 body:
   - type: markdown
     attributes:
       value: |
-        ## 🗄️ Problema de Base de Datos
-        Reporta problemas relacionados con MySQL, TypeORM, migraciones o esquemas.
+        Reporta problemas de MySQL, TypeORM o migraciones. ¡Solo lo esencial!
 
   - type: dropdown
     id: database-category
     attributes:
-      label: Categoría del problema
-      description: ¿Qué tipo de problema de base de datos es?
+      label: Tipo de problema
       options:
-        - Migration Issues
-        - TypeORM Entity/Repository
+        - Migration
+        - TypeORM Entity/Query
         - Query Performance
-        - Connection Issues
-        - Schema Design
-        - Data Integrity
-        - Indexing
-        - Foreign Key Constraints
+        - Connection
+        - Schema/Constraints
         - Other
     validations:
       required: true
@@ -29,73 +24,24 @@ body:
   - type: textarea
     id: problem-description
     attributes:
-      label: Descripción del problema
-      description: |
-        Describe el problema de base de datos que estás experimentando
+      label: ¿Qué está fallando?
+      description: Describe el problema brevemente
       placeholder: |
-        La migración 20240101_create_users falla al ejecutar "pnpm migration:run"
-        debido a una constraint de foreign key que no puede ser creada.
+        La migración CreateUsers falla por constraint de foreign key
     validations:
       required: true
 
   - type: textarea
-    id: error-message
+    id: error-code
     attributes:
-      label: Mensaje de error
-      description: |
-        Error exacto devuelto por MySQL o TypeORM
+      label: Error o código relevante (opcional)
+      description: Pega el error o código relacionado
       placeholder: |
         ```
-        QueryFailedError: ER_CANNOT_ADD_FOREIGN: Cannot add foreign key constraint
-        at QueryFailedError.TypeORMError [as constructor] (/node_modules/typeorm/error/TypeORMError.js:7:28)
-        at /node_modules/typeorm/driver/mysql/MysqlQueryRunner.js:299:25
+        QueryFailedError: ER_CANNOT_ADD_FOREIGN
         ```
-    validations:
-      required: false
 
-  - type: textarea
-    id: entity-definition
-    attributes:
-      label: Definición de entidad (si aplica)
-      description: |
-        Código TypeScript de la entidad relacionada con el problema
-      placeholder: |
-        ```typescript
-        @Entity('users')
-        export class User {
-          @PrimaryGeneratedColumn()
-          id: number;
-
-          @Column({ unique: true })
-          email: string;
-
-          @OneToMany(() => Post, post => post.user)
-          posts: Post[];
-        }
-        ```
-    validations:
-      required: false
-
-  - type: textarea
-    id: migration-code
-    attributes:
-      label: Código de migración (si aplica)
-      description: |
-        Código de la migración que está causando problemas
-      placeholder: |
-        ```typescript
-        export class CreateUsers1640000000000 implements MigrationInterface {
-          public async up(queryRunner: QueryRunner): Promise<void> {
-            await queryRunner.createTable(new Table({
-              name: 'users',
-              columns: [
-                { name: 'id', type: 'int', isPrimary: true, isGenerated: true },
-                { name: 'email', type: 'varchar', length: '255', isUnique: true }
-              ]
-            }));
-          }
-        }
-        ```
+        O código de entidad/migración problemática
     validations:
       required: false
 
@@ -147,7 +93,7 @@ body:
         - **Environment:** (development/production)
         - **Database name:** 
         - **Character set:** 
-        - **Storage engine:** 
+        - **Storage engine:**
       placeholder: Completa la información del entorno
     validations:
       required: true
