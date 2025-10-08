@@ -1,12 +1,14 @@
-import app from './app.js';
-import { verifyPortAvailable } from '#utils/verifyPort.js';
-import { CONFIG } from '#config/index.js';
-import { SERVER_MESSAGES } from '#constants/server.js';
-import { ERROR, ERROR_SERVER } from '#constants/errors/server.js';
+import { verifyPortAvailable } from '@utils/verifyPort.js';
+import app from '@/app.js';
+import { CONFIG } from '@config/index.js';
+import { SERVER_MESSAGES } from '@constants/common/server.js';
+import { ERROR, ERROR_SERVER } from '@errors/server.js';
+import { initDB } from '@config/connection.js';
 
 async function main(): Promise<void> {
   const port: number = Number(CONFIG.PORT);
   await verifyPortAvailable(port);
+  await initDB();
   const server = app.listen(port);
 
   server.once(SERVER_MESSAGES.LISTENING, () => {

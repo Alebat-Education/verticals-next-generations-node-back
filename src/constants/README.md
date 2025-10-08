@@ -14,6 +14,21 @@ Si escribes el mismo número o string más de 2 veces → mételo en constants
 
 ## Cómo se hace
 
+### Estructura de archivos
+
+```
+constants/
+├── index.ts          # Re-exporta todas las constantes
+├── httpStatus.ts     # Códigos HTTP
+├── roles.ts          # Roles de usuario
+├── messages.ts       # Mensajes de respuesta
+└── errors/
+    ├── server.ts     # Errores de servidor
+    └── validation.ts # Errores de validación
+```
+
+### Ejemplos
+
 ```typescript
 // constants/httpStatus.ts
 export const HTTP_STATUS = {
@@ -48,16 +63,33 @@ import { HTTP_STATUS } from '@constants/httpStatus';
 import { ROLES } from '@constants/roles';
 import { VALIDATION_RULES } from '@constants/validation';
 
-async create(req: Request, res: Response): Promise<void> {
-  if (req.user.role !== ROLES.ADMIN) {
-    return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'No permission' });
-  }
+// O importar todo desde el index
+import { HTTP_STATUS, ROLES, VALIDATION_RULES } from '@constants';
+```
 
-  if (req.body.age < VALIDATION_RULES.MIN_AGE) {
-    return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Too young' });
-  }
+### En controladores
 
-  const student = await this.service.create(req.body);
-  res.status(HTTP_STATUS.CREATED).json(student);
+```typescript
+res.status(HTTP_STATUS.CREATED).json({ message: 'Student created' });
+
+if (user.role !== ROLES.ADMIN) {
+  return res.status(HTTP_STATUS.FORBIDDEN).json({ error: 'Access denied' });
 }
+```
+
+async create(req: Request, res: Response): Promise<void> {
+if (req.user.role !== ROLES.ADMIN) {
+return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'No permission' });
+}
+
+if (req.body.age < VALIDATION_RULES.MIN_AGE) {
+return res.status(HTTP_STATUS.BAD_REQUEST).json({ error: 'Too young' });
+}
+
+const student = await this.service.create(req.body);
+res.status(HTTP_STATUS.CREATED).json(student);
+}
+
+```
+
 ```

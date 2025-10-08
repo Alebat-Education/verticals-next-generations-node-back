@@ -1,17 +1,17 @@
+import type { BaseService, EntityWithId } from '@common/GlobalService.js';
+import { STATUS } from '@constants/common/http.js';
+import {
+  ERROR_INTERNAL_SERVER,
+  ERROR_INVALID_ID,
+  ERROR_RESOURCE_NOT_FOUND,
+  SUCCESS_RESOURCE_CREATED,
+  SUCCESS_RESOURCE_DELETED,
+  SUCCESS_RESOURCE_UPDATED,
+  SUCCESS_RESOURCES_RETRIEVED,
+} from '@constants/errors/common.js';
+import type { ApiErrorResponse, ApiResponse, ApiSuccessResponse } from '@interfaces/http.js';
 import type { Request, Response } from 'express';
 import type { BaseEntity, DeepPartial } from 'typeorm';
-import type { BaseService, EntityWithId } from '#services/GlobalService.js';
-import type { ApiResponse, ApiErrorResponse, ApiSuccessResponse } from '#interfaces/http.js';
-import { STATUS } from '#constants/http.js';
-import {
-  ERROR_RESOURCE_NOT_FOUND,
-  ERROR_INVALID_ID,
-  ERROR_INTERNAL_SERVER,
-  SUCCESS_RESOURCE_CREATED,
-  SUCCESS_RESOURCE_UPDATED,
-  SUCCESS_RESOURCE_DELETED,
-  SUCCESS_RESOURCES_RETRIEVED,
-} from '#constants/errors/common.js';
 
 export abstract class BaseController<T extends BaseEntity & EntityWithId> {
   protected service: BaseService<T>;
@@ -22,9 +22,6 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     this.resourceName = resourceName;
   }
 
-  /**
-   * Get all resources
-   */
   async findAll(_req: Request, res: Response): Promise<void> {
     try {
       const resources = await this.service.findAll();
@@ -39,9 +36,6 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     }
   }
 
-  /**
-   * Get resource by ID
-   */
   async findOne(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -81,9 +75,6 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     }
   }
 
-  /**
-   * Create new resource
-   */
   async create(req: Request, res: Response): Promise<void> {
     try {
       const data: DeepPartial<T> = req.body;
@@ -100,9 +91,6 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     }
   }
 
-  /**
-   * Update resource by ID
-   */
   async update(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -144,9 +132,6 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     }
   }
 
-  /**
-   * Delete resource by ID
-   */
   async delete(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -186,17 +171,11 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     }
   }
 
-  /**
-   * Validate if ID is a valid number
-   */
   protected isValidId(id: string): boolean {
     const numId = Number(id);
     return !isNaN(numId) && numId > 0 && Number.isInteger(numId);
   }
 
-  /**
-   * Handle errors consistently
-   */
   protected handleError(res: Response, error: unknown): void {
     const errorMessage = error instanceof Error ? error.message : ERROR_INTERNAL_SERVER;
 
