@@ -1,26 +1,23 @@
-name: "🚀 Feature Request - Backend API"
-description: Sugiere una nueva funcionalidad o mejora para la API backend
-labels: ["enhancement", "backend", "api", "type: feature", "status: backlog", "priority: planning"]
+name: '🚀 Feature Request'
+description: Sugiere una nueva funcionalidad o mejora
+labels: ['enhancement', 'backend', 'api', 'type: feature', 'status: backlog', 'priority: planning']
 body:
   - type: markdown
     attributes:
       value: |
-        ¡Gracias por tomarte el tiempo para sugerir una mejora para nuestra API backend!
-        Por favor, proporciona detalles técnicos específicos para facilitar la implementación.
+        Describe brevemente qué funcionalidad necesitas. ¡Simple y rápido!
 
   - type: dropdown
     id: feature-category
     attributes:
-      label: Categoría de la funcionalidad
-      description: ¿En qué área del backend se implementaría?
+      label: Tipo de funcionalidad
       options:
         - New API Endpoint
-        - Database Schema/Migration
-        - Authentication/Authorization
-        - Middleware Enhancement
-        - Performance Optimization
-        - Developer Experience
-        - Configuration/Environment
+        - Database/Migration
+        - Authentication
+        - Middleware
+        - Performance
+        - Config/Environment
         - Documentation
         - Other
     validations:
@@ -29,72 +26,22 @@ body:
   - type: textarea
     id: feature-description
     attributes:
-      label: Descripción de la funcionalidad
-      description: |
-        Descripción clara y técnica de la funcionalidad propuesta.
-        Incluye detalles de implementación si los tienes.
+      label: ¿Qué funcionalidad necesitas?
+      description: Describe brevemente lo que quieres implementar
       placeholder: |
-        Ejemplo: Implementar endpoint para paginación de usuarios con filtros avanzados
-        - Endpoint: GET /api/users?page=1&limit=10&filter[role]=admin
-        - Respuesta: { users: [...], pagination: { page, limit, total, pages } }
+        Ejemplo: Endpoint GET /api/users con paginación y filtros
     validations:
       required: true
 
   - type: textarea
-    id: use-case
+    id: details
     attributes:
-      label: Caso de uso
-      description: |
-        ¿Por qué es necesaria esta funcionalidad? ¿Qué problema resuelve?
+      label: Detalles técnicos (opcional)
+      description: Si tienes ideas de implementación, endpoint, queries, etc.
       placeholder: |
-        Esta funcionalidad permitiría a los clientes frontend paginar eficientemente
-        grandes listas de usuarios sin cargar todos los registros de una vez.
-    validations:
-      required: true
-
-  - type: textarea
-    id: api-design
-    attributes:
-      label: Diseño de API propuesto
-      description: |
-        Si es un nuevo endpoint, describe la estructura de la API
-      placeholder: |
-        **Método:** POST
-        **Endpoint:** /api/auth/refresh
-        **Headers:** Authorization: Bearer <refresh_token>
-        **Request body:** {}
-        **Response:** { accessToken: "...", expiresIn: 3600 }
-        **Status codes:** 200 (success), 401 (invalid token), 500 (server error)
-    validations:
-      required: false
-
-  - type: textarea
-    id: database-impact
-    attributes:
-      label: Impacto en base de datos
-      description: |
-        ¿Requiere cambios en el esquema de base de datos, nuevas tablas, migraciones?
-      placeholder: |
-        - Nueva tabla: refresh_tokens (id, user_id, token, expires_at, created_at)
-        - Migración necesaria para agregar índices en user_id y token
-    validations:
-      required: false
-
-  - type: textarea
-    id: typescript-considerations
-    attributes:
-      label: Consideraciones TypeScript
-      description: |
-        ¿Qué tipos/interfaces nuevos se necesitarían?
-      placeholder: |
-        interface RefreshTokenRequest {
-          refreshToken: string;
-        }
-        
-        interface RefreshTokenResponse {
-          accessToken: string;
-          expiresIn: number;
-        }
+        - Request: GET /api/users?page=1&limit=10
+        - Response: { users: [...], total: 100 }
+        - Requiere índice en users.created_at
     validations:
       required: false
 

@@ -1,11 +1,7 @@
 import 'reflect-metadata';
-import { CONFIG } from '#config/index.js';
+import { CONFIG } from '@config/index.js';
 import { DataSource } from 'typeorm';
-import {
-  ERROR_DB_MISSING_ENV_VARS,
-  ERROR_DB_CONNECTION_FAILED,
-  SUCCESS_DB_CONNECTED,
-} from '#constants/errors/server.js';
+import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, SUCCESS_DB_CONNECTED } from '@errors/server.js';
 
 const { DB_HOST_READING, DB_HOST_WRITING, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = CONFIG;
 

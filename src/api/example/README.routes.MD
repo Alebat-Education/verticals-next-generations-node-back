@@ -13,7 +13,7 @@ Definen los endpoints de la API y conectan las URLs con los controladores.
 
 ```typescript
 import { Router } from 'express';
-import { studentsController } from '@controllers/studentsController';
+import { studentsController } from '@api/example/StudentsController';
 import { validateToken } from '@middleware/authMiddleware';
 
 const router = Router();
@@ -37,16 +37,16 @@ export default router;
 ```typescript
 // routes/index.ts
 import { Router } from 'express';
-import studentsRoutes from '@routes/studentsRoutes';
-import professorsRoutes from '@routes/professorsRoutes';
-import coursesRoutes from '@routes/coursesRoutes';
+import studentsRoutes from '@api/students/studentsRoutes';
+import productsRoutes from '@api/products/productsRoutes';
+import usersRoutes from '@api/users/usersRoutes';
 
 const router = Router();
 
 // Conectar rutas
 router.use('/students', studentsRoutes);
-router.use('/professors', professorsRoutes);
-router.use('/courses', coursesRoutes);
+router.use('/products', productsRoutes);
+router.use('/users', usersRoutes);
 
 export default router;
 ```
@@ -87,3 +87,38 @@ DELETE /api/students/:id      // Eliminar
 - Archivo: `studentsRoutes.ts`
 - URLs: `/api/students` (plural, minúsculas)
 - Parámetros: `:id`, `:studentId`
+
+## Estructura de archivos
+
+```
+api/example/
+├── studentsRoutes.ts        # Este archivo
+├── StudentsController.ts    # Controlador
+├── StudentsService.ts       # Lógica de negocio
+└── Student.ts              # Modelo/Entity
+```
+
+## Organización del proyecto
+
+```
+src/
+├── api/
+│   ├── students/
+│   │   ├── studentsRoutes.ts
+│   │   ├── StudentsController.ts
+│   │   ├── StudentsService.ts
+│   │   └── Student.ts
+│   ├── products/
+│   │   ├── productsRoutes.ts
+│   │   ├── ProductsController.ts
+│   │   ├── ProductsService.ts
+│   │   └── Product.ts
+│   └── users/
+│       ├── usersRoutes.ts
+│       ├── UsersController.ts
+│       ├── UsersService.ts
+│       └── User.ts
+├── routes/
+│   └── index.ts            # Conecta todas las rutas de API
+└── app.ts                  # Usa routes/index.ts
+```

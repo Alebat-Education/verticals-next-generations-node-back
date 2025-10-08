@@ -1,125 +1,70 @@
-name: "🐞 Bug Report - Backend API"
+name: '🐞 Bug Report'
 description: Reporta un error en la API backend
 labels: ['bug', 'backend', 'api', 'type: bug', 'status: backlog', 'priority: planning']
 body:
   - type: markdown
     attributes:
       value: |
-        ## 📝 Antes de comenzar
-        Por favor, el título del problema debe ser breve, descriptivo y en inglés.
-        Completa todos los campos requeridos para que podamos diagnosticar y solucionar el problema rápidamente.
-        Proporciona tanta información técnica como sea posible.
+        Reporta el bug de forma rápida. ¡Solo lo esencial!
+
+  - type: dropdown
+    id: bug-category
+    attributes:
+      label: Tipo de bug
+      options:
+        - API Endpoint
+        - Database/TypeORM
+        - Authentication/JWT
+        - Middleware
+        - Config/Environment
+        - Dependencies
+        - Other
+    validations:
+      required: true
 
   - type: textarea
     id: bug-description
     attributes:
-      label: Descripción del error
-      description: |
-        Descripción detallada del error
-      placeholder: Describe el error
+      label: ¿Qué está fallando?
+      description: Describe el error brevemente
+      placeholder: |
+        POST /api/users retorna 500 cuando el email ya existe
     validations:
       required: true
 
   - type: textarea
     id: steps-to-reproduce
     attributes:
-      label: Pasos para reproducir
-      description: |
-        ¿Qué pasos debemos realizar para que ocurra el error? 
-        Instrucciones claras y concisas nos ayudarán a clasificar tu problema rápidamente. 
-        Puedes usar [Markdown](https://guides.github.com/features/mastering-markdown/) para dar formato a listas y código.
-      placeholder: Pasos para reproducir el error
+      label: ¿Cómo reproducirlo?
+      description: Pasos para reproducir el error
+      placeholder: |
+        1. POST /api/users con email duplicado
+        2. Retorna 500 en lugar de 400
     validations:
       required: true
 
   - type: textarea
     id: expected
     attributes:
-      label: ¿Qué esperabas que ocurriera?
-    validations:
-      required: true
-
-  - type: dropdown
-    id: bug-category
-    attributes:
-      label: Categoría del error
-      description: ¿En qué área del backend ocurre el problema?
-      options:
-        - API Routes/Endpoints
-        - Database/TypeORM
-        - Authentication/JWT
-        - Middleware
-        - Configuration/Environment
-        - Dependencies/Packages
-        - Performance
-        - Other
+      label: ¿Qué esperabas?
+      description: Comportamiento esperado
+      placeholder: |
+        Debería retornar 400 Bad Request con mensaje de error
     validations:
       required: true
 
   - type: textarea
-    id: environment
+    id: logs-and-context
     attributes:
-      label: Información del entorno
-      description: |
-        Información técnica del entorno donde ocurre el error
-      value: |
-        - **Node.js version:** 
-        - **pnpm version:** 
-        - **Operating System:** 
-        - **MySQL version:** 
-        - **Environment:** (development/production)
-      placeholder: Completa la información del entorno
-    validations:
-      required: true
-
-  - type: textarea
-    id: server-logs
-    attributes:
-      label: Logs del servidor
-      description: |
-        Incluye logs relevantes del servidor, errores de consola, stack traces, etc.
-        Usa bloques de código para mejor legibilidad.
+      label: Logs, error o contexto adicional (opcional)
+      description: Stack trace, logs, endpoint details, etc.
       placeholder: |
         ```
-        [2024-01-01 10:00:00] ERROR: Database connection failed
         TypeError: Cannot read property 'id' of undefined
-            at UserController.create (/src/controllers/userController.ts:45:12)
+            at UserController.create (/src/controllers/UserController.ts:45:12)
         ```
+
+        Endpoint: POST /api/users
+        Env: development, Node 20.x
     validations:
       required: false
-
-  - type: textarea
-    id: api-endpoint
-    attributes:
-      label: Endpoint afectado
-      description: |
-        Si el error está relacionado con una API route específica
-      placeholder: |
-        **Method:** POST
-        **Endpoint:** /api/users
-        **Request body:** { "name": "test", "email": "test@example.com" }
-        **Response:** 500 Internal Server Error
-    validations:
-      required: false
-
-  - type: textarea
-    id: database-info
-    attributes:
-      label: Información de base de datos (si aplica)
-      description: |
-        Información relevante sobre consultas SQL, migraciones, etc.
-      placeholder: |
-        **Query:** SELECT * FROM users WHERE email = ?
-        **Error:** ER_NO_SUCH_TABLE: Table 'app.users' doesn't exist
-    validations:
-      required: false
-
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Contexto adicional
-      description: |
-        Cualquier otra información relevante: configuración específica, archivos .env, etc.
-    validations:
-      required: false
-

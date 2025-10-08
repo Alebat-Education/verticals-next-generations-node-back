@@ -1,6 +1,6 @@
 import { createServer } from 'net';
-import { ERROR, ERROR_INVALID_PORT, ERROR_PORT_IN_USE } from '#constants/errors/server.js';
-import { CODE_ADDRESS_IN_USE, CODE_SERVER_TERMINATED, SERVER_CONFIG, SERVER_MESSAGES } from '#constants/server.js';
+import { ERROR, ERROR_INVALID_PORT, ERROR_PORT_IN_USE } from '@errors/server.js';
+import { CODE_ADDRESS_IN_USE, CODE_SERVER_TERMINATED, SERVER_CONFIG, SERVER_MESSAGES } from '@constants/server.js';
 
 export async function verifyPortAvailable(port: number): Promise<void> {
   if (!Number.isInteger(port) || port <= 0) return terminateAll(ERROR_INVALID_PORT);
