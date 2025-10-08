@@ -2,6 +2,23 @@
 
 Los modelos definen la estructura de datos y representan las entidades de la base de datos usando TypeORM.
 
+## Estructura de archivos
+
+```
+api/example/
+├── Student.ts              # Este archivo - Entity/Model
+├── StudentsController.ts   # Controlador
+├── StudentsService.ts      # Lógica de negocio
+└── studentsRoutes.ts       # Rutas
+```
+
+## Para qué sirve
+
+- Definir estructura de tablas en base de datos
+- Mapear datos entre TypeScript y MySQL
+- Establecer relaciones entre entidades
+- Validar datos antes de guardar
+
 ## Estructura
 
 Cada modelo debería:
@@ -23,6 +40,7 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  BaseEntity,
 } from 'typeorm';
 
 @Entity('users')
