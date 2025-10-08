@@ -1,0 +1,3 @@
+export const EXPORTED_MODELS = [
+  // HERE ADD YOUR ENTITIES
+];

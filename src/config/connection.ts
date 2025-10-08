@@ -1,12 +1,19 @@
 import 'reflect-metadata';
-import { CONFIG } from '@config/index.js';
 import { DataSource } from 'typeorm';
-import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, SUCCESS_DB_CONNECTED } from '@errors/server.js';
+import { CONFIG } from '@config/index.js';
+import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, ERROR_INVALID_PORT } from '@errors/server.js';
+import { EXPORTED_MODELS } from '@constants/models.js';
+import { SERVER_MESSAGES } from '@constants/server.js';
 
 const { DB_HOST_READING, DB_HOST_WRITING, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = CONFIG;
 
 if (!DB_HOST_READING || !DB_HOST_WRITING || !DB_PORT || !DB_USERNAME || !DB_NAME) {
   throw new Error(ERROR_DB_MISSING_ENV_VARS);
+}
+
+const parsedPort = Number(DB_PORT);
+if (isNaN(parsedPort)) {
+  throw new Error(ERROR_INVALID_PORT);
 }
 
 export const AppDataSource = new DataSource({
@@ -15,7 +22,7 @@ export const AppDataSource = new DataSource({
     master: {
       // write
       host: DB_HOST_WRITING,
-      port: DB_PORT,
+      port: parsedPort,
       username: DB_USERNAME,
       password: DB_PASSWORD || '',
       database: DB_NAME,
@@ -24,14 +31,14 @@ export const AppDataSource = new DataSource({
       // read-only
       {
         host: DB_HOST_READING,
-        port: DB_PORT,
+        port: parsedPort,
         username: DB_USERNAME,
         password: DB_PASSWORD || '',
         database: DB_NAME,
       },
     ],
   },
-  entities: ['src/models/**/*.ts'],
+  entities: EXPORTED_MODELS,
   logging: true,
 });
 
@@ -41,7 +48,7 @@ export const initDB = async (): Promise<void> => {
       await AppDataSource.initialize();
 
       // eslint-disable-next-line no-console
-      console.log(SUCCESS_DB_CONNECTED);
+      console.log(SERVER_MESSAGES.SUCCESS_DB_CONNECTED);
     }
   } catch (error) {
     // eslint-disable-next-line no-console
