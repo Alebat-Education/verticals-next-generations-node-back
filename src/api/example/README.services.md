@@ -12,9 +12,9 @@ Contienen la lógica de negocio de la aplicación. Es donde están las operacion
 ## Cómo se hace
 
 ```typescript
-// services/StudentsService.ts
-import AppDataSource from '@db/database';
-import { Student } from '@models/studentsModel';
+// StudentsService.ts
+import { AppDataSource } from '@config/database';
+import { Student } from '@api/example/Student';
 
 export class StudentsService {
   private studentRepository = AppDataSource.getRepository(Student);
