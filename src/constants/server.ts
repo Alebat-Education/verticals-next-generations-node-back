@@ -27,5 +27,3 @@ export const SERVER_ENVIRONMENTS = {
 } as const;
 export const CODE_ADDRESS_IN_USE = 'EADDRINUSE';
 export const CODE_SERVER_TERMINATED = 'SIGTERM';
-
-export const SUCCESS_DB_CONNECTED = 'Connected to database successfully.';

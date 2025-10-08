@@ -17,7 +17,7 @@ if (isNaN(parsedPort)) {
 }
 
 export const AppDataSource = new DataSource({
-  type: SERVER_CONFIG.DEFAULT_DB_TYPE,
+  type: SERVER_CONFIG.DEFAULT_DB_TYPE as 'mysql',
   replication: {
     master: {
       // write
