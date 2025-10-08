@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 import { CONFIG } from '@config/index.js';
 import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, ERROR_INVALID_PORT } from '@errors/server.js';
 import { EXPORTED_MODELS } from '@constants/models.js';
-import { SERVER_MESSAGES } from '@constants/server.js';
+import { SERVER_CONFIG, SERVER_MESSAGES } from '@constants/server.js';
 
 const { DB_HOST_READING, DB_HOST_WRITING, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = CONFIG;
 
@@ -17,7 +17,7 @@ if (isNaN(parsedPort)) {
 }
 
 export const AppDataSource = new DataSource({
-  type: 'mysql',
+  type: SERVER_CONFIG.DEFAULT_DB_TYPE,
   replication: {
     master: {
       // write
