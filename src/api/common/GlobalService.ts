@@ -11,15 +11,15 @@ export abstract class BaseService<T extends BaseEntity & EntityWithId> {
     this.repository = repository;
   }
 
+  async findAll(options?: Omit<FindOneOptions<T>, 'where'>): Promise<T[]> {
+    return await this.repository.find(options);
+  }
+
   async findById(id: number | string, options?: Omit<FindOneOptions<T>, 'where'>): Promise<T | null> {
     return await this.repository.findOne({
       where: { id } as FindOptionsWhere<T>,
       ...options,
     });
-  }
-
-  async findAll(options?: Omit<FindOneOptions<T>, 'where'>): Promise<T[]> {
-    return await this.repository.find(options);
   }
 
   async findBy(conditions: FindOptionsWhere<T>, options?: Omit<FindOneOptions<T>, 'where'>): Promise<T[]> {

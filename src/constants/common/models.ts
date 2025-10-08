@@ -1,3 +1,6 @@
+import { Product } from '@api/products/productModel.js';
+
 export const EXPORTED_MODELS = [
-  // HERE ADD YOUR ENTITIES
+  // add here all exported entities for TypeORM
+  Product,
 ];
