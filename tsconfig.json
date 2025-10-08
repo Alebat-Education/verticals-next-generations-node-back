@@ -20,7 +20,23 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force"
+    "moduleDetection": "force",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@api/*": ["./src/api/*"],
+      "@common/*": ["./src/api/common/*"],
+      "@products/*": ["./src/products/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@errors/*": ["./src/constants/errors/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@enums/*": ["./src/interfaces/Enums/*"],
+      "@middleware/*": ["./src/middleware/*"],
+      "@config/*": ["./src/config/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@migrations/*": ["./src/migrations/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
