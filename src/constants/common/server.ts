@@ -5,9 +5,10 @@
 
 export const SERVER_CONFIG = {
   DEFAULT_PORT: 3000,
+  DEFAULT_DB_PORT: 3306,
   HOME: '/',
   HOST: '127.0.0.1',
-  DEFAULT_DB_PORT: 3306,
+  DEFAULT_DB_TYPE: 'mysql',
 } as const;
 
 export const SERVER_MESSAGES = {
@@ -16,6 +17,7 @@ export const SERVER_MESSAGES = {
   },
   READY: `Server started and READY!`,
   LISTENING: `listening`,
+  SUCCESS_DB_CONNECTED: 'Connected to database successfully.',
 } as const;
 
 export const SERVER_ENVIRONMENTS = {
