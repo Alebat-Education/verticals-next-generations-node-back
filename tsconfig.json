@@ -25,7 +25,7 @@
       "@common/*": ["./src/api/common/*"],
       "@products/*": ["./src/products/*"],
       "@constants/*": ["./src/constants/*"],
-      "@errors/*": ["./src/constants/errors/*"],
+      "@errors/*": ["./src/constants/errors_temp/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@enums/*": ["./src/interfaces/Enums/*"],
       "@middleware/*": ["./src/middleware/*"],
