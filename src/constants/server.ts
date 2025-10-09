@@ -5,9 +5,10 @@
 
 export const SERVER_CONFIG = {
   DEFAULT_PORT: 3000,
+  DEFAULT_DB_PORT: 3306,
   HOME: '/',
   HOST: '127.0.0.1',
-  DEFAULT_DB_PORT: 3306,
+  DEFAULT_DB_TYPE: 'mysql',
 } as const;
 
 export const SERVER_MESSAGES = {
@@ -16,6 +17,7 @@ export const SERVER_MESSAGES = {
   },
   READY: `Server started and READY!`,
   LISTENING: `listening`,
+  SUCCESS_DB_CONNECTED: 'Connected to database successfully.',
 } as const;
 
 export const SERVER_ENVIRONMENTS = {
@@ -23,16 +25,5 @@ export const SERVER_ENVIRONMENTS = {
   PRODUCTION: 'production',
   TEST: 'test',
 } as const;
-
-export const HTTP_STATUS = {
-  OK: 200,
-  CREATED: 201,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500,
-} as const;
-
 export const CODE_ADDRESS_IN_USE = 'EADDRINUSE';
 export const CODE_SERVER_TERMINATED = 'SIGTERM';
