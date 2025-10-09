@@ -1,5 +1,5 @@
 import { BaseError } from '@utils/errors.js';
-import { HTTP_STATUS } from '@constants/server.js';
+import { HTTP_STATUS } from '@constants/common/server.js';
 import type { Request, Response, NextFunction } from 'express';
 
 /**
