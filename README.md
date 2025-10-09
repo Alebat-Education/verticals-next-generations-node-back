@@ -59,7 +59,8 @@ PORT=3000
 NODE_ENV=development
 
 # Database
-DB_HOST=localhost
+DB_HOST_WRITING=localhost_1
+DB_HOST_READING=localhost_2
 DB_PORT=3306
 DB_USERNAME=tu_usuario
 DB_PASSWORD=tu_contraseña
