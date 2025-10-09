@@ -12,7 +12,14 @@
  *
  */
 
-// TypeORM metadata reflection support
+/**
+ * Importing 'reflect-metadata' is required for TypeORM to enable the use of decorators
+ * on entity classes. TypeORM relies on metadata reflection to map class properties to
+ * database columns and relationships. Without this import, decorators such as @Entity,
+ * @Column, and others will not function correctly, and the ORM will fail to initialize
+ * entity metadata. This import should be included once in the application's entry point
+ * or in any module that sets up the database connection.
+ */
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { CONFIG } from '@config/index.js';
