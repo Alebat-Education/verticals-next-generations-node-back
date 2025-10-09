@@ -1,5 +1,5 @@
 import express, { type Express, type Request, type Response } from 'express';
-import { SERVER_CONFIG, SERVER_MESSAGES } from '@constants/server.js';
+import { SERVER_CONFIG, SERVER_MESSAGES } from '@constants/common/server.js';
 import cors from 'cors';
 import morgan from 'morgan';
 
