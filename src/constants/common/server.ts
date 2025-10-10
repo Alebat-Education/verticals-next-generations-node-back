@@ -25,5 +25,6 @@ export const SERVER_ENVIRONMENTS = {
   PRODUCTION: 'production',
   TEST: 'test',
 } as const;
+
 export const CODE_ADDRESS_IN_USE = 'EADDRINUSE';
 export const CODE_SERVER_TERMINATED = 'SIGTERM';

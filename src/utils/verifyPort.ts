@@ -1,6 +1,12 @@
 import { createServer } from 'net';
 import { ERROR, ERROR_INVALID_PORT, ERROR_PORT_IN_USE } from '@errors/server.js';
-import { CODE_ADDRESS_IN_USE, CODE_SERVER_TERMINATED, SERVER_CONFIG, SERVER_MESSAGES } from '@constants/server.js';
+import {
+  CODE_ADDRESS_IN_USE,
+  CODE_SERVER_TERMINATED,
+  SERVER_CONFIG,
+  SERVER_MESSAGES,
+} from '@constants/common/server.js';
+import { logger } from '@config/logger.js';
 
 export async function verifyPortAvailable(port: number): Promise<void> {
   if (!Number.isInteger(port) || port <= 0) return terminateAll(ERROR_INVALID_PORT);
@@ -18,7 +24,7 @@ export async function verifyPortAvailable(port: number): Promise<void> {
 }
 
 const terminateAll = (message: string): never => {
-  process.stderr.write(`${message}\n`);
+  logger.fatal({ ppid: process.ppid, pid: process.pid }, message);
   const ppid = process.ppid;
   if (ppid && ppid !== process.pid) {
     try {

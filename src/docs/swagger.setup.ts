@@ -2,7 +2,7 @@ import type { Express } from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from '@docs/swagger.config.js';
-import { SERVER_ENVIRONMENTS } from '@constants/server.js';
+import { SERVER_ENVIRONMENTS } from '@constants/common/server.js';
 import { CONFIG } from '@config/index.js';
 
 const swaggerUiOptions: swaggerUi.SwaggerUiOptions = {

@@ -24,8 +24,9 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { CONFIG } from '@config/index.js';
 import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, ERROR_INVALID_PORT } from '@errors/server.js';
-import { EXPORTED_MODELS } from '@constants/models.js';
-import { SERVER_CONFIG, SERVER_ENVIRONMENTS, SERVER_MESSAGES } from '@constants/server.js';
+import { EXPORTED_MODELS } from '@constants/common/models.js';
+import { SERVER_CONFIG, SERVER_ENVIRONMENTS, SERVER_MESSAGES } from '@constants/common/server.js';
+import { logger } from '@config/logger.js';
 
 /**
  * Database configuration variables extracted from the global CONFIG object.
@@ -160,14 +161,10 @@ export const initDB = async (): Promise<void> => {
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize();
 
-      // Log successful database connection using standardized message
-      // eslint-disable-next-line no-console
-      console.log(SERVER_MESSAGES.SUCCESS_DB_CONNECTED);
+      logger.info(SERVER_MESSAGES.SUCCESS_DB_CONNECTED);
     }
   } catch (error) {
-    // Log connection error with standardized error message and terminate application
-    // eslint-disable-next-line no-console
-    console.error(ERROR_DB_CONNECTION_FAILED, error);
+    logger.fatal({ err: error }, ERROR_DB_CONNECTION_FAILED);
     process.exit(1);
   }
 };

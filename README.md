@@ -6,14 +6,18 @@ Un backend moderno construido con Node.js, TypeScript, Express y TypeORM para el
 
 - **TypeScript**: Desarrollo con tipado estático
 - **Express.js**: Framework web rápido y minimalista
-- **TypeORM**: ORM moderno para TypeScript y JavaScript
-- **MySQL**: Base de datos relacional
+- **TypeORM**: ORM moderno con soporte para MySQL replication (master-slave)
+- **MySQL**: Base de datos relacional con configuración de lectura/escritura
 - **ES Modules**: Soporte completo para módulos ES6
-- **Path Mapping**: Importaciones limpias con aliases (@)
+- **Path Mapping**: Importaciones limpias con aliases (@config, @common, @constants, etc.)
 - **Hot Reload**: Desarrollo con recarga automática usando tsx
 - **Linting & Formatting**: ESLint + Prettier para código consistente
 - **CORS**: Configuración para Cross-Origin Resource Sharing
 - **Environment Variables**: Configuración flexible con dotenv
+- **Arquitectura Base**: Controllers y Services abstractos reutilizables (BaseController, BaseService)
+- **Logger**: Sistema de logging con pino para desarrollo y producción
+- **Error Handling**: Manejo centralizado de errores con clases personalizadas
+- **Auto Setup Routes**: Configuración automática de rutas desde los módulos
 
 ## 📋 Requisitos Previos
 
@@ -58,9 +62,9 @@ Crea un archivo `.env` en la raíz del proyecto:
 PORT=3000
 NODE_ENV=development
 
-# Database
-DB_HOST_WRITING=localhost_1
-DB_HOST_READING=localhost_2
+# Database - MySQL Replication Configuration
+DB_HOST_WRITING=localhost_1    # Master server (write operations)
+DB_HOST_READING=localhost_2    # Slave server (read operations)
 DB_PORT=3306
 DB_USERNAME=tu_usuario
 DB_PASSWORD=tu_contraseña
@@ -104,21 +108,62 @@ pnpm test
 
 ```
 src/
-├── app.ts                 # Configuración principal de Express
-├── index.ts              # Punto de entrada de la aplicación
-├── config/               # Configuraciones
-│   └── index.ts          # Variables de entorno y configuración
-├── constants/            # Constantes de la aplicación
-├── controllers/          # Controladores HTTP
-├── db/                   # Configuración de base de datos
-├── interfaces/           # Interfaces TypeScript
-├── middleware/           # Middlewares de Express
-├── migrations/           # Migraciones de base de datos
-├── models/               # Modelos/Entidades de TypeORM
-├── routes/               # Definición de rutas
-├── services/             # Lógica de negocio
-├── types/                # Tipos TypeScript
-└── utils/                # Utilidades y helpers
+├── app.ts                     # Configuración principal de Express
+├── index.ts                   # Punto de entrada de la aplicación
+├── api/                       # Módulos de la API
+│   ├── common/                # Base classes compartidas
+│   │   ├── GlobalController.ts  # BaseController abstracto
+│   │   └── GlobalService.ts     # BaseService abstracto
+│   ├── example/               # Ejemplo de módulo (guía)
+│   │   ├── README.controller.MD
+│   │   ├── README.models.md
+│   │   ├── README.routes.MD
+│   │   ├── README.services.md
+│   │   ├── README.test.md
+│   │   └── dtos/
+│   │       └── README.dto.md
+│   └── products/              # Ejemplo de módulo implementado
+│       ├── productController.ts
+│       ├── productModel.ts
+│       ├── ProductRoutes.ts
+│       ├── ProductService.ts
+│       └── dtos/
+├── config/                    # Configuraciones
+│   ├── connection.ts          # TypeORM DataSource con MySQL replication
+│   ├── index.ts               # Variables de entorno
+│   ├── logger.ts              # Configuración de pino logger
+│   └── README.MD
+├── constants/                 # Constantes de la aplicación
+│   ├── common/
+│   │   ├── http.ts            # Status codes y mensajes HTTP
+│   │   ├── models.ts          # Nombres de modelos y entidades exportadas
+│   │   └── server.ts          # Configuración del servidor
+│   ├── errors/
+│   │   ├── common.ts          # Errores comunes
+│   │   ├── error-messages.ts  # Mensajes de error
+│   │   ├── errors.ts          # Clases de error personalizadas
+│   │   └── server.ts          # Errores del servidor
+│   └── README.md
+├── interfaces/                # Interfaces TypeScript
+│   ├── http.ts                # Interfaces de respuestas HTTP
+│   ├── Enums/
+│   │   ├── global.ts
+│   │   └── product.ts
+│   └── README.md
+├── middleware/                # Middlewares de Express
+│   ├── errorHandler.ts        # Manejador global de errores
+│   └── README.md
+├── migrations/                # Migraciones de TypeORM
+│   └── README.md
+├── tests/                     # Tests generales (integración, e2e)
+│   └── README.md
+├── types/                     # Tipos TypeScript personalizados
+│   └── README.md
+└── utils/                     # Utilidades y helpers
+    ├── isValidId.ts           # Validación de IDs
+    ├── setupRoutes.ts         # Auto-configuración de rutas
+    ├── verifyPort.ts          # Verificación de puerto disponible
+    └── README.md
 ```
 
 ## 🔧 Path Mapping (Aliases)
@@ -128,37 +173,135 @@ El proyecto usa aliases para importaciones más limpias:
 ```typescript
 // En lugar de importaciones relativas
 import { CONFIG } from '../../../config';
-import { UserService } from '../../services/UserService';
+import { BaseController } from '../../api/common/GlobalController';
 
 // Usa aliases
-import { CONFIG } from '@config/index';
-import { UserService } from '@services/UserService';
+import { CONFIG } from '@config/index.js';
+import { BaseController } from '@common/GlobalController.js';
 ```
 
 ### Aliases disponibles:
 
-- `@/*` - Carpeta src
-- `@config/*` - Configuración
-- `@constants/*` - Constantes
-- `@controllers/*` - Controladores
-- `@db/*` - Base de datos
-- `@interfaces/*` - Interfaces
-- `@middleware/*` - Middlewares
-- `@migrations/*` - Migraciones
-- `@models/*` - Modelos
-- `@routes/*` - Rutas
-- `@services/*` - Servicios
-- `@types/*` - Tipos
-- `@utils/*` - Utilidades
+- `@/*` - Carpeta src raíz
+- `@common/*` - Classes base compartidas (BaseController, BaseService)
+- `@config/*` - Configuración y conexión a DB
+- `@constants/*` - Constantes de la aplicación
+- `@errors/*` - Constantes de errores
+- `@interfaces/*` - Interfaces TypeScript
+- `@middleware/*` - Middlewares de Express
+- `@migrations/*` - Migraciones de TypeORM
+- `@types/*` - Tipos TypeScript personalizados
+- `@utils/*` - Utilidades y helpers
+
+**Nota**: Todos los imports deben incluir la extensión `.js` para compatibilidad con ES Modules.
 
 ## 🗄️ Base de Datos
 
-El proyecto usa TypeORM con MySQL. Configuración principal:
+El proyecto usa TypeORM con MySQL en configuración de replicación (master-slave):
 
 - **ORM**: TypeORM 0.3.27
-- **Base de datos**: MySQL
-- **Migraciones**: Automáticas durante desarrollo
-- **Entidades**: Definidas en `src/models/`
+- **Base de datos**: MySQL con replication support
+- **Master**: Servidor de escritura (`DB_HOST_WRITING`)
+- **Slave**: Servidor de lectura (`DB_HOST_READING`)
+- **Migraciones**: Controladas manualmente vía TypeORM CLI
+- **Entidades**: Definidas dentro de cada módulo en `src/api/{module}/` y exportadas en `constants/common/models.ts`
+- **Logging**: Deshabilitado en producción, habilitado en desarrollo
+
+## 🏗️ Arquitectura del Proyecto
+
+### Patrón Base: BaseController y BaseService
+
+El proyecto implementa clases abstractas base para reutilizar lógica común:
+
+#### BaseService (`src/api/common/GlobalService.ts`)
+
+Proporciona métodos CRUD estándar para todas las entidades:
+
+```typescript
+import { BaseService } from '@common/GlobalService.js';
+import { AppDataSource } from '@config/connection.js';
+import { Product } from './productModel.js';
+
+class ProductService extends BaseService<Product> {
+  constructor() {
+    super(AppDataSource.getRepository(Product));
+  }
+
+  // Métodos heredados automáticamente:
+  // - findAll()
+  // - findById()
+  // - findBy()
+  // - findOneBy()
+  // - create()
+  // - update()
+  // - delete()
+  // - exists()
+  // - count()
+
+  // Agrega tus métodos específicos aquí
+  async findByCategory(category: string): Promise<Product[]> {
+    return this.findBy({ category });
+  }
+}
+
+export const productService = new ProductService();
+```
+
+#### BaseController (`src/api/common/GlobalController.ts`)
+
+Proporciona endpoints HTTP estándar para todas las entidades:
+
+```typescript
+import { BaseController } from '@common/GlobalController.js';
+import { productService } from './ProductService.js';
+import { MODELS_NAMES } from '@constants/common/models.js';
+
+export class ProductController extends BaseController<Product> {
+  constructor() {
+    super(productService, MODELS_NAMES.PRODUCT);
+  }
+
+  // Endpoints heredados automáticamente:
+  // - GET /  (findAll)
+  // - GET /:id  (findOne)
+  // - POST /  (create)
+  // - PUT /:id  (update)
+  // - DELETE /:id  (delete)
+
+  // Agrega tus endpoints específicos aquí
+}
+
+export const productController = new ProductController();
+```
+
+### Estructura de un Módulo
+
+Cada módulo de la API sigue esta estructura:
+
+```
+api/products/
+├── productModel.ts           # Entity de TypeORM
+├── ProductService.ts         # Lógica de negocio (extiende BaseService)
+├── productController.ts      # Controlador HTTP (extiende BaseController)
+├── ProductRoutes.ts          # Definición de rutas
+└── dtos/                     # Data Transfer Objects
+    ├── CreateProductDto.ts
+    └── UpdateProductDto.ts
+```
+
+### Auto-configuración de Rutas
+
+Las rutas se configuran automáticamente usando el helper `setupRoutes`:
+
+```typescript
+// index.ts
+import { setupRoutes } from '@utils/setupRoutes.js';
+import app from './app.js';
+
+await setupRoutes(app);
+```
+
+El sistema busca automáticamente archivos `*Routes.ts` en `src/api/` y los registra.
 
 ## 🔍 Linting y Formateo
 
