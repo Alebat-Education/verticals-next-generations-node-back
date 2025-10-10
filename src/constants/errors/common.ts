@@ -14,10 +14,7 @@ export const UNKNOWN_ERROR = 'An unknown error occurred';
 export const ERROR_NO_STACK_TRACE = 'No stack trace available';
 export const ERROR_RESOURCE_ALREADY_EXISTS = (resource: string) => `${resource} already exists`;
 
-export const SUCCESS_RESOURCE_CREATED = (resource: string) => `${resource} created successfully`;
-
-export const SUCCESS_RESOURCE_UPDATED = (resource: string) => `${resource} updated successfully`;
-
-export const SUCCESS_RESOURCE_DELETED = (resource: string) => `${resource} deleted successfully`;
-
-export const SUCCESS_RESOURCES_RETRIEVED = (resource: string) => `${resource} retrieved successfully`;
+export const ERROR_RESOURCE_CREATED = (error: unknown) => `Failed to create entity: ${error}`;
+export const ERROR_RESOURCE_UPDATED = (error: unknown) => `Failed to update entity: ${error}`;
+export const ERROR_RESOURCE_DELETED = (error: unknown) => `Failed to delete entity: ${error}`;
+export const ERROR_RESOURCES_RETRIEVED = (error: unknown) => `Failed to retrieve entities: ${error}`;

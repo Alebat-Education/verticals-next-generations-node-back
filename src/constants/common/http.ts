@@ -16,3 +16,8 @@ export const HTTP_STATUS = {
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,
 } as const;
+
+export const SUCCESS_RESOURCE_CREATED = (resource: string) => `${resource} created successfully`;
+export const SUCCESS_RESOURCE_UPDATED = (resource: string) => `${resource} updated successfully`;
+export const SUCCESS_RESOURCE_DELETED = (resource: string) => `${resource} deleted successfully`;
+export const SUCCESS_RESOURCES_RETRIEVED = (resource: string) => `${resource} retrieved successfully`;

@@ -1,13 +1,12 @@
 import type { BaseService, EntityWithId } from '@common/GlobalService.js';
-import { HTTP_STATUS } from '@constants/common/http.js';
 import {
-  ERROR_INVALID_ID,
-  ERROR_RESOURCE_NOT_FOUND,
+  HTTP_STATUS,
   SUCCESS_RESOURCE_CREATED,
   SUCCESS_RESOURCE_DELETED,
   SUCCESS_RESOURCE_UPDATED,
   SUCCESS_RESOURCES_RETRIEVED,
-} from '@constants/errors/common.js';
+} from '@constants/common/http.js';
+import { ERROR_INVALID_ID, ERROR_RESOURCE_NOT_FOUND } from '@constants/errors/common.js';
 import type { ApiSuccessResponse } from '@interfaces/http.js';
 import { NotFoundError, ValidationError } from '@constants/errors/errors.js';
 import type { NextFunction, Request, Response } from 'express';
