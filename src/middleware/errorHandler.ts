@@ -24,7 +24,7 @@ export const globalErrorHandler = (err: unknown, req: Request, res: Response, _n
       timestamp: new Date().toISOString(),
       path: req.originalUrl,
     };
-    res.status(Number(err.statusCode)).json(errorResponse);
+    res.status(err.statusCode).json(errorResponse);
     return;
   }
 
