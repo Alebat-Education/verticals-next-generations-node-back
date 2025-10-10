@@ -48,6 +48,15 @@ export class ConflictError extends BaseError {
 
 export class InternalServerError extends BaseError {
   constructor(customMessage?: string) {
-    super(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR, customMessage ?? '');
+    super(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR, customMessage ?? '', false);
+  }
+}
+
+export class FatalError extends BaseError {
+  constructor(customMessage?: string, originalError?: Error) {
+    super(ERROR_MESSAGES.INTERNAL_SERVER_ERROR, HTTP_STATUS.INTERNAL_SERVER_ERROR, customMessage ?? '', false);
+    if (originalError && typeof originalError.stack === 'string') {
+      this.stack = originalError.stack;
+    }
   }
 }
