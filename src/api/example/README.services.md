@@ -1,122 +1,105 @@
 # Services
 
-Contienen la lógica de negocio de la aplicación. Es donde están las operaciones complejas que no van en los controladores.
+Contienen la lógica de negocio. **Todos los services deben extender `BaseService`** para heredar operaciones CRUD.
 
 ## Para qué sirve
 
-- **Separar responsabilidades**: Los controladores manejan HTTP, los services manejan la lógica
-- **Reutilizar código**: Un service puede ser usado por varios controladores
-- **Operaciones complejas**: Validaciones avanzadas, cálculos, algoritmos
-- **Mantener orden**: El código queda más organizado y testeable
+- Separar responsabilidades (Controllers = HTTP, Services = lógica)
+- Reutilizar código en múltiples controllers
+- Validaciones de negocio, cálculos y algoritmos complejos
+- Operaciones con base de datos
+
+## Arquitectura
+
+**BaseService** proporciona 10+ métodos CRUD listos: `findAll`, `findById`, `findBy`, `findOneBy`, `create`, `update`, `delete`, `exists`, `count`, `existsBy`.
 
 ## Cómo se hace
 
 ```typescript
-// StudentsService.ts
-import { AppDataSource } from '@config/database';
-import { Student } from '@api/example/Student';
+// api/students/StudentService.ts
+import { BaseService } from '@common/GlobalService.js';
+import { AppDataSource } from '@config/connection.js';
+import { Student } from './studentModel.js';
 
-export class StudentsService {
-  private studentRepository = AppDataSource.getRepository(Student);
-
-  // Buscar con validaciones de negocio
-  async findById(id: number) {
-    if (id <= 0) {
-      throw new Error('ID must be positive');
+class StudentService extends BaseService<Student> {
+  constructor() {
+    if (!AppDataSource?.isInitialized) {
+      throw new Error('DataSource not initialized');
     }
-
-    const student = await this.studentRepository.findOneBy({ id });
-    if (!student) {
-      throw new Error('Student not found');
-    }
-
-    return student;
+    super(AppDataSource.getRepository(Student));
   }
 
-  // Crear con validaciones complejas
-  async create(data: any) {
-    // Validar email único
-    const existingStudent = await this.studentRepository.findOne({
-      where: { email: data.email },
-    });
-
-    if (existingStudent) {
-      throw new Error('Email already exists');
-    }
-
-    // Validar reglas de negocio
-    if (data.age < 16 || data.age > 65) {
-      throw new Error('Age must be between 16 and 65');
-    }
-
-    // Crear y guardar
-    const student = this.studentRepository.create(data);
-    return await student.save();
+  // Métodos específicos del dominio
+  async findByEmail(email: string): Promise<Student | null> {
+    return this.findOneBy({ email });
   }
 
-  // Lógica de negocio compleja
-  async calculateStats(studentId: number) {
-    const student = await this.findById(studentId);
-    const courses = await student.courses;
+  async findActiveStudents(): Promise<Student[]> {
+    return this.findBy({ isActive: true });
+  }
 
-    // Cálculos complejos
-    const totalGrades = courses.reduce((sum, course) => sum + course.grade, 0);
-    const average = courses.length > 0 ? totalGrades / courses.length : 0;
-    const status = average >= 70 ? 'Approved' : 'Needs improvement';
+  async createWithValidation(data: Partial<Student>): Promise<Student> {
+    // Validaciones de negocio
+    const existing = await this.findByEmail(data.email!);
+    if (existing) {
+      throw new ValidationError('Email already exists');
+    }
 
-    return {
-      studentName: student.name,
-      totalCourses: courses.length,
-      average: Math.round(average * 100) / 100,
-      status,
-    };
+    if (data.age && (data.age < 16 || data.age > 65)) {
+      throw new ValidationError('Age must be between 16 and 65');
+    }
+
+    return this.create(data);
   }
 }
+
+export const studentService = new StudentService();
 ```
 
-## Uso en controladores
+## Uso en Controllers
 
 ```typescript
-import { StudentsService } from '@services/StudentsService';
-
-class StudentsController {
-  private studentsService = new StudentsService();
-
-  async create(req: Request, res: Response) {
-    try {
-      // Controller: recibe HTTP, llama service, devuelve HTTP
-      const student = await this.studentsService.create(req.body);
-      res.status(201).send({ msg: 'Student created', student });
-    } catch (error) {
-      res.status(400).send({ error: error.message });
-    }
-  }
-
-  async getStats(req: Request, res: Response) {
-    try {
-      const { id } = req.params;
-      // Service hace los cálculos complejos
-      const stats = await this.studentsService.calculateStats(parseInt(id));
-      res.status(200).send({ stats });
-    } catch (error) {
-      res.status(500).send({ error: error.message });
-    }
-  }
-}
+// Solo llamar métodos del service
+const student = await studentService.findById(1);
+const students = await studentService.findActiveStudents();
+const newStudent = await studentService.createWithValidation(data);
 ```
 
-## La diferencia clave
+## Diferencia Clave: Controller vs Service
 
-**Controller (Capa HTTP):**
+**Controller (HTTP)**
 
-- Recibe requests
-- Valida parámetros básicos
-- Llama al service correcto
-- Devuelve responses
+- Recibe requests y devuelve responses
+- Valida parámetros básicos de entrada
+- Llama a métodos del service
+- Maneja errores con `next(error)`
 
-**Service (Capa Lógica):**
+**Service (Lógica de Negocio)**
 
 - Validaciones complejas de negocio
-- Cálculos y algoritmos
-- Operaciones con múltiples tablas
-- Reglas del dominio de la aplicación
+- Operaciones con base de datos
+- Cálculos y transformaciones
+- Queries complejas con QueryBuilder
+
+## Tipos de Métodos en Services
+
+1. **Consultas**: `findByEmail()`, `findActiveStudents()`
+2. **Validaciones**: `validateEmailUnique()`, `validateAge()`
+3. **Operaciones**: `createWithValidation()`, `deactivateStudent()`
+4. **Cálculos**: `calculateStats()`, `generateReport()`
+
+## Mejores Prácticas
+
+✅ **SÍ hacer**
+
+- Extender `BaseService<T>`
+- Validar `AppDataSource.isInitialized` en constructor
+- Validaciones de negocio en el service
+- Exportar instancia única del service
+
+❌ **NO hacer**
+
+- Crear services sin extender BaseService
+- Validaciones de negocio en el controller
+- Operaciones directas en controllers
+- Queries complejas en controllers

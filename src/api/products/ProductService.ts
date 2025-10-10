@@ -1,25 +1,17 @@
 import { Product } from '@/api/products/productModel.js';
 import { BaseService } from '@common/GlobalService.js';
 import { AppDataSource } from '@config/connection.js';
-import type { ProductType } from '@interfaces/Enums/product.js';
+import { ERROR_DATA_SOURCE_NOT_INITIALIZED } from '@constants/errors/server.js';
 
 class ProductService extends BaseService<Product> {
   constructor() {
-    // No usar Product.getRepository() (evita BaseEntity side-effects)
     if (!AppDataSource || !AppDataSource.isInitialized) {
-      throw new Error('DataSource must be initialized before creating ProductService (llama initDB() primero)');
+      throw new Error(ERROR_DATA_SOURCE_NOT_INITIALIZED);
     }
-
-    const repo = AppDataSource.getRepository(Product);
-    super(repo);
+    super(AppDataSource.getRepository(Product));
   }
 
-  async findByType(type: ProductType): Promise<Product[]> {
-    return await this.repository.find({
-      where: { type },
-      cache: 30000,
-    });
-  }
+  // specific methods ...
 }
 
 export const productService = new ProductService();

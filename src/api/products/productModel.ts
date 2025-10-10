@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 import {
   ProductType,
   PurchaseType,
@@ -10,7 +10,7 @@ import {
 import { Verticals, StripeCrm } from '@enums/global.js';
 
 @Entity('products')
-export class Product extends BaseEntity {
+export class Product {
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -113,77 +113,5 @@ export class Product extends BaseEntity {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  // @Column({ type: 'varchar', length: 500, nullable: true })
-  // image?: string;
-
-  //   @Column({ type: 'json', nullable: true, name: 'full_price' })
-  //   fullPrice?: {
-  //     price: number;
-  //     currency: string;
-  //     discountPrice?: number;
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   tuitionPrice?: {
-  //     price: number;
-  //     currency: string;
-  //     discountPrice?: number;
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   instalmentsPrices?: Array<{
-  //     installments: number;
-  //     price: number;
-  //     currency: string;
-  //   }>;
-
-  //   @Column({ type: 'json', nullable: true })
-  //   subscriptionPrices?: Array<{
-  //     interval: string;
-  //     price: number;
-  //     currency: string;
-  //     stripeID?: string;
-  //   }>;
-
-  //   @Column({ type: 'json', nullable: true })
-  //   numberLimitedPlaces?: {
-  //     totalPlaces: number;
-  //     availablePlaces: number;
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   header?: {
-  //     title: string;
-  //     subtitle?: string;
-  //     description?: string;
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   cardTags?: {
-  //     tags: string[];
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   laabConnection?: {
-  //     courseId: string;
-  //     apiKey: string;
-  //     endpoint: string;
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   bookDetails?: {
-  //     isbn: string;
-  //     author: string;
-  //     publisher: string;
-  //     pages?: number;
-  //     year?: number;
-  //   };
-
-  //   @Column({ type: 'json', nullable: true })
-  //   seo?: {
-  //     title?: string;
-  //     description?: string;
-  //     keywords?: string[];
-  //     ogImage?: string;
-  //   };
+  // ...
 }
