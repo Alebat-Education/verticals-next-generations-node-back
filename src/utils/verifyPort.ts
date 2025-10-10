@@ -1,5 +1,5 @@
 import { createServer } from 'net';
-import { ERROR, ERROR_INVALID_PORT, ERROR_PORT_IN_USE } from '@errors/server.js';
+import { ERROR, ERROR_INVALID_PORT, ERROR_PORT_IN_USE } from '@constants/errors/server.js';
 import {
   CODE_ADDRESS_IN_USE,
   CODE_SERVER_TERMINATED,

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { CONFIG } from '@config/index.js';
-import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, ERROR_INVALID_PORT } from '@errors/server.js';
+import { ERROR_DB_MISSING_ENV_VARS, ERROR_DB_CONNECTION_FAILED, ERROR_INVALID_PORT } from '@constants/errors/server.js';
 import { EXPORTED_MODELS } from '@constants/common/models.js';
 import { SERVER_CONFIG, SERVER_ENVIRONMENTS, SERVER_MESSAGES } from '@constants/common/server.js';
 
