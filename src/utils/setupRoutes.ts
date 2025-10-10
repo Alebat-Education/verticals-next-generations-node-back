@@ -8,8 +8,14 @@ export async function setupRoutes(app: Express): Promise<void> {
     // Add more routes here as needed
   };
 
+  const PATHS = {
+    PRODUCTS: '/products',
+
+    // Add more paths here as needed
+  };
+
   try {
-    app.use('/products', (await PRODUCTION_ROUTES.PRODUCTS()).default);
+    app.use(PATHS.PRODUCTS, (await PRODUCTION_ROUTES.PRODUCTS()).default);
   } catch (error) {
     throw new Error(`${ERROR_SETTING_UP_ROUTES}: ${error}`);
   }
