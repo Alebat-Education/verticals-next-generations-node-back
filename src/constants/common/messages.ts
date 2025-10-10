@@ -1,0 +1,25 @@
+export const API_MESSAGES = {
+  PRODUCTS: {
+    RETRIEVED_SUCCESS: 'Products retrieved successfully',
+    RETRIEVED_BY_TYPE_SUCCESS: (type: string) => `Products of type ${type} retrieved successfully`,
+    CREATED_SUCCESS: 'Product created successfully',
+    UPDATED_SUCCESS: 'Product updated successfully',
+    DELETED_SUCCESS: 'Product deleted successfully',
+    NOT_FOUND: 'Product not found',
+    INVALID_TYPE: 'Invalid product type',
+    FETCH_ERROR: 'Error fetching products',
+    FETCH_BY_TYPE_ERROR: 'Error fetching products by type',
+    CREATE_ERROR: 'Error creating product',
+    UPDATE_ERROR: 'Error updating product',
+    DELETE_ERROR: 'Error deleting product',
+  },
+  GENERIC: {
+    SUCCESS: 'Operation completed successfully',
+    ERROR: 'An error occurred',
+    NOT_FOUND: 'Resource not found',
+    UNAUTHORIZED: 'Unauthorized access',
+    FORBIDDEN: 'Forbidden access',
+    BAD_REQUEST: 'Bad request',
+    INTERNAL_SERVER_ERROR: 'Internal server error',
+  },
+} as const;
