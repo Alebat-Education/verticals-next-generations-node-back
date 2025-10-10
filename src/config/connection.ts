@@ -87,7 +87,6 @@ if (isNaN(parsedPort)) {
  *
  * // Check if DataSource is initialized
  * if (AppDataSource.isInitialized) {
- *   console.log('Database is ready');
  * }
  * ```
  */

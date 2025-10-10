@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import { swaggerOptions } from '@docs/swagger.config.js';
 import { SERVER_ENVIRONMENTS } from '@constants/common/server.js';
 import { CONFIG } from '@config/index.js';
+import { logger } from '@config/logger.js';
 
 const swaggerUiOptions: swaggerUi.SwaggerUiOptions = {
   explorer: true,
@@ -33,8 +34,7 @@ export const setupSwagger = (app: Express): void => {
 
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
-  if (CONFIG.NODE_ENV === SERVER_ENVIRONMENTS.PRODUCTION) {
-    // eslint-disable-next-line no-console
-    console.log('📚 Swagger docs available at: /api-docs');
+  if (CONFIG.NODE_ENV === SERVER_ENVIRONMENTS.DEVELOPMENT) {
+    logger.info('📚 Swagger docs available at: http://localhost:3000/api-docs');
   }
 };
