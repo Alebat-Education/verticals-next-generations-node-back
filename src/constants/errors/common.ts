@@ -10,6 +10,8 @@ export const ERROR_INVALID_ID = 'Invalid ID provided';
 export const ERROR_MISSING_REQUIRED_FIELDS = 'Missing required fields';
 export const ERROR_VALIDATION_FAILED = 'Validation failed';
 export const ERROR_INTERNAL_SERVER = 'Internal server error';
+export const UNKNOWN_ERROR = 'An unknown error occurred';
+export const ERROR_NO_STACK_TRACE = 'No stack trace available';
 export const ERROR_RESOURCE_ALREADY_EXISTS = (resource: string) => `${resource} already exists`;
 
 export const SUCCESS_RESOURCE_CREATED = (resource: string) => `${resource} created successfully`;

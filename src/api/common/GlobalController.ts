@@ -1,5 +1,5 @@
 import type { BaseService, EntityWithId } from '@common/GlobalService.js';
-import { STATUS } from '@constants/common/http.js';
+import { HTTP_STATUS } from '@constants/common/http.js';
 import {
   ERROR_INVALID_ID,
   ERROR_RESOURCE_NOT_FOUND,
@@ -8,12 +8,13 @@ import {
   SUCCESS_RESOURCE_UPDATED,
   SUCCESS_RESOURCES_RETRIEVED,
 } from '@constants/errors/common.js';
-import type { ApiResponse, ApiSuccessResponse } from '@interfaces/http.js';
+import type { ApiSuccessResponse } from '@interfaces/http.js';
 import { NotFoundError, ValidationError } from '@constants/errors/errors.js';
 import type { NextFunction, Request, Response } from 'express';
-import type { BaseEntity, DeepPartial } from 'typeorm';
+import type { DeepPartial } from 'typeorm';
+import { isValidId } from '@utils/isValidId.js';
 
-export abstract class BaseController<T extends BaseEntity & EntityWithId> {
+export abstract class BaseController<T extends EntityWithId> {
   protected service: BaseService<T>;
   protected resourceName: string;
 
@@ -26,11 +27,10 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     try {
       const resources = await this.service.findAll();
       const response: ApiSuccessResponse<T[]> = {
-        success: true,
         message: SUCCESS_RESOURCES_RETRIEVED(this.resourceName),
         data: resources,
       };
-      res.status(STATUS.OK).json(response);
+      res.status(HTTP_STATUS.OK).json(response);
     } catch (error) {
       next(error);
     }
@@ -40,7 +40,7 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     try {
       const { id } = req.params;
 
-      if (!id || !this.isValidId(id)) {
+      if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);
       }
 
@@ -51,11 +51,10 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
       }
 
       const response: ApiSuccessResponse<T> = {
-        success: true,
         message: SUCCESS_RESOURCES_RETRIEVED(this.resourceName),
         data: resource,
       };
-      res.status(STATUS.OK).json(response);
+      res.status(HTTP_STATUS.OK).json(response);
     } catch (error) {
       next(error);
     }
@@ -67,11 +66,10 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
       const resource = await this.service.create(data);
 
       const response: ApiSuccessResponse<T> = {
-        success: true,
         message: SUCCESS_RESOURCE_CREATED(this.resourceName),
         data: resource,
       };
-      res.status(STATUS.CREATED).json(response);
+      res.status(HTTP_STATUS.CREATED).json(response);
     } catch (error) {
       next(error);
     }
@@ -82,7 +80,7 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
       const { id } = req.params;
       const data: DeepPartial<T> = req.body;
 
-      if (!id || !this.isValidId(id)) {
+      if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);
       }
 
@@ -94,11 +92,10 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
       const updatedResource = await this.service.update(Number(id), data);
 
       const response: ApiSuccessResponse<T> = {
-        success: true,
         message: SUCCESS_RESOURCE_UPDATED(this.resourceName),
         data: updatedResource!,
       };
-      res.status(STATUS.OK).json(response);
+      res.status(HTTP_STATUS.OK).json(response);
     } catch (error) {
       next(error);
     }
@@ -108,7 +105,7 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
     try {
       const { id } = req.params;
 
-      if (!id || !this.isValidId(id)) {
+      if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);
       }
 
@@ -119,18 +116,14 @@ export abstract class BaseController<T extends BaseEntity & EntityWithId> {
 
       await this.service.delete(Number(id));
 
-      const response: ApiResponse = {
-        success: true,
+      const response: ApiSuccessResponse<T> = {
         message: SUCCESS_RESOURCE_DELETED(this.resourceName),
+        data: existingResource,
       };
-      res.status(STATUS.NO_CONTENT).json(response);
+
+      res.status(HTTP_STATUS.OK).json(response);
     } catch (error) {
       next(error);
     }
-  }
-
-  protected isValidId(id: string): boolean {
-    const numId = Number(id);
-    return !isNaN(numId) && numId > 0 && Number.isInteger(numId);
   }
 }

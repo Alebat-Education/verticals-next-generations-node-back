@@ -11,6 +11,5 @@ router.put('/:id', (req, res, next) => productController.update(req, res, next))
 router.delete('/:id', (req, res, next) => productController.delete(req, res, next));
 
 // specific routes
-router.get('/type/:type', (req, res) => productController.getByType(req, res));
 
 export default router;

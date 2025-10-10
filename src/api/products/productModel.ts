@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
 import {
   ProductType,
   PurchaseType,
@@ -10,7 +10,7 @@ import {
 import { Verticals, StripeCrm } from '@enums/global.js';
 
 @Entity('products')
-export class Product extends BaseEntity {
+export class Product {
   @PrimaryGeneratedColumn()
   id!: number;
 

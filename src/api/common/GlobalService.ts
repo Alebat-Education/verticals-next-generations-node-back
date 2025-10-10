@@ -1,17 +1,17 @@
-import type { BaseEntity, Repository, FindOptionsWhere, DeepPartial, FindOneOptions } from 'typeorm';
+import type { Repository, FindOptionsWhere, DeepPartial, FindOneOptions, FindManyOptions } from 'typeorm';
 
 export interface EntityWithId {
   id: number | string;
 }
 
-export abstract class BaseService<T extends BaseEntity & EntityWithId> {
+export abstract class BaseService<T extends EntityWithId> {
   protected readonly repository: Repository<T>;
 
   constructor(repository: Repository<T>) {
     this.repository = repository;
   }
 
-  async findAll(options?: Omit<FindOneOptions<T>, 'where'>): Promise<T[]> {
+  async findAll(options?: FindManyOptions<T>): Promise<T[]> {
     return await this.repository.find(options);
   }
 
