@@ -1,8 +1,8 @@
 import { plainToInstance } from 'class-transformer';
-import { validate, type ValidationError } from 'class-validator';
+import { validate, type ValidationError as ClassValidatorError } from 'class-validator';
 import type { Request, Response, NextFunction } from 'express';
-import { STATUS } from '@constants/common/http.js';
 import { VALIDATION_ERROR_MESSAGES } from '@constants/validation/index.js';
+import { ValidationError, InternalServerError } from '@utils/errors.js';
 
 type ClassType<T extends object> = { new (): T };
 
@@ -16,8 +16,11 @@ interface ValidationPipeOptions {
 
 type ValidationType = 'body' | 'query' | 'params';
 
-function formatValidationErrors(errors: ValidationError[]): Array<{ field: string; constraints: string[] }> {
-  const formatError = (error: ValidationError, parentPath = ''): Array<{ field: string; constraints: string[] }> => {
+function formatValidationErrors(errors: ClassValidatorError[]): Array<{ field: string; constraints: string[] }> {
+  const formatError = (
+    error: ClassValidatorError,
+    parentPath = '',
+  ): Array<{ field: string; constraints: string[] }> => {
     const fieldPath = parentPath ? `${parentPath}.${error.property}` : error.property;
     const result: Array<{ field: string; constraints: string[] }> = [];
 
@@ -40,18 +43,12 @@ function formatValidationErrors(errors: ValidationError[]): Array<{ field: strin
   return errors.flatMap(error => formatError(error));
 }
 
-const VALIDATION_TYPE_MESSAGES: Record<ValidationType, string> = {
-  body: VALIDATION_ERROR_MESSAGES.VALIDATION_FAILED_BODY,
-  query: VALIDATION_ERROR_MESSAGES.VALIDATION_FAILED_QUERY,
-  params: VALIDATION_ERROR_MESSAGES.VALIDATION_FAILED_PARAMS,
-};
-
 export function ValidationPipe<T extends object>(
   dtoClass: ClassType<T>,
   type: ValidationType = 'body',
   options?: ValidationPipeOptions,
 ) {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     const defaultOptions: ValidationPipeOptions = {
       whitelist: true,
       forbidNonWhitelisted: true,
@@ -74,7 +71,7 @@ export function ValidationPipe<T extends object>(
         excludeExtraneousValues: false,
       });
 
-      const validateOptions: Record<string, any> = {
+      const validateOptions: Record<string, unknown> = {
         whitelist: validationOptions.whitelist ?? true,
         forbidNonWhitelisted: validationOptions.forbidNonWhitelisted ?? true,
         skipMissingProperties: validationOptions.skipMissingProperties ?? false,
@@ -92,24 +89,20 @@ export function ValidationPipe<T extends object>(
 
       if (errors.length > 0) {
         const formattedErrors = formatValidationErrors(errors);
+        const detailsMessage = JSON.stringify(formattedErrors);
 
-        return res.status(STATUS.BAD_REQUEST).json({
-          success: false,
-          message: VALIDATION_TYPE_MESSAGES[type],
-          errors: formattedErrors,
-          statusCode: STATUS.BAD_REQUEST,
-        }) as any;
+        throw new ValidationError(detailsMessage);
       }
 
-      req[type] = dtoObject as any;
+      req[type] = dtoObject as unknown;
       next();
     } catch (error) {
-      return res.status(STATUS.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: VALIDATION_ERROR_MESSAGES.INTERNAL_VALIDATION_ERROR,
-        error: error instanceof Error ? error.message : 'Unknown error',
-        statusCode: STATUS.INTERNAL_SERVER_ERROR,
-      }) as any;
+      if (error instanceof ValidationError) {
+        next(error);
+      } else {
+        const internalError = new InternalServerError(VALIDATION_ERROR_MESSAGES.INTERNAL_VALIDATION_ERROR);
+        next(internalError);
+      }
     }
   };
 }
