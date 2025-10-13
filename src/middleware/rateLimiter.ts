@@ -1,14 +1,15 @@
 import rateLimit from 'express-rate-limit';
 import { CONFIG } from '@config/index.js';
 import { HTTP_STATUS } from '@constants/common/http.js';
+import { ERROR_MESSAGES } from '@constants/errors/error-messages.js';
 
 export const authRateLimiter = rateLimit({
   windowMs: CONFIG.RATE_LIMIT_WINDOW_MS,
-  limit: CONFIG.RATE_LIMIT_MAX_REQUESTS,
+  limit: CONFIG.RATE_LIMIT_MAX_AUTH_REQUESTS,
   message: {
     statusCode: HTTP_STATUS.TOO_MANY_REQUESTS,
-    error: 'Too many authentication attempts, please try again later.',
-    retryAfter: '15 minutes',
+    error: ERROR_MESSAGES.TOO_MANY_REQUESTS,
+    retryAfter: ERROR_MESSAGES.RETRY_AFTER,
   },
   standardHeaders: true,
   legacyHeaders: false,
@@ -17,11 +18,11 @@ export const authRateLimiter = rateLimit({
 
 export const apiRateLimiter = rateLimit({
   windowMs: CONFIG.RATE_LIMIT_WINDOW_MS,
-  limit: 100,
+  limit: CONFIG.RATE_LIMIT_MAX_API_REQUESTS,
   message: {
     statusCode: HTTP_STATUS.TOO_MANY_REQUESTS,
-    error: 'Too many requests, please try again later.',
-    retryAfter: '15 minutes',
+    error: ERROR_MESSAGES.TOO_MANY_REQUESTS,
+    retryAfter: ERROR_MESSAGES.RETRY_AFTER,
   },
   standardHeaders: true,
   legacyHeaders: false,
