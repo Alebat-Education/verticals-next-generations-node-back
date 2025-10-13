@@ -1,374 +1,298 @@
-# 🔍 ValidationPipe — Middleware de Validación Avanzado
+# 🎯 ValidationPipe Implementado en ProductRoutes
 
-## 📋 Descripción
+## 🚀 Implementación Completa
 
-Middleware robusto que transforma y valida datos de peticiones HTTP (body, query, params) usando **class-validator** y **class-transformer**. Se integra con el sistema centralizado de errores para un manejo consistente y profesional.
+El `validation-pipe` ha sido implementado exitosamente en las rutas de productos con logging estructurado y validación automática.
 
-## ✅ Características Principales
+## 📋 Rutas Implementadas
 
-- ✅ **Validación de múltiples fuentes**: body, query parameters, route params
-- ✅ **Transformación automática**: Convierte plain objects a instancias de clase tipadas
-- ✅ **Whitelist automático**: Elimina propiedades no permitidas en el DTO
-- ✅ **Errores detallados**: Formato estructurado con field-level errors
-- ✅ **Sistema de errores centralizado**: Usa `ValidationError` e `InternalServerError`
-- ✅ **Type-safe**: Reemplaza `req[type]` con instancia validada y tipada
-- ✅ **Conversión implícita**: Convierte tipos en query/params automáticamente
-- ✅ **Sin Magic Numbers**: Usa constantes del sistema de errores
-- ✅ **Manejo robusto**: Captura errores de validación y errores internos
-
-## 🎯 ¿Qué hace el ValidationPipe?
-
-1. **Transforma** `req[type]` (body/query/params) a una instancia del DTO con `plainToInstance`
-2. **Valida** la instancia con decoradores de `class-validator`
-3. **Elimina** propiedades no permitidas (`whitelist: true`)
-4. **Rechaza** peticiones con campos extra (`forbidNonWhitelisted: true`)
-5. **Reemplaza** `req[type]` con la instancia validada para acceso tipado en controladores
-6. **Delega** manejo de errores al `globalErrorHandler`
-
-## 🔧 Uso
-
-### Importación
+### ✅ GET /products - Lista con Filtros
 
 ```typescript
-import { ValidationPipe, ValidateBody, ValidateQuery, ValidateParams } from '@middleware/validation-pipe.js';
+router.get('/', ValidateQuery(QueryProductDto), (req, res, next) => productController.findAll(req, res, next));
 ```
 
-### Validación de Body
+**Query Parameters Validados:**
+
+- `type`: ProductType enum (Libro, Curso, etc.)
+- `vertical`: Verticals enum (Oposiciones, Idiomas, etc.)
+- `SKU`: string opcional
+- `slug`: string opcional
+- `page`: integer mínimo 1
+- `limit`: integer entre 1-100
+- `sortBy`: string opcional
+- `order`: 'ASC' | 'DESC'
+
+**Ejemplo de uso:**
+
+```bash
+GET /api/products?type=Libro&vertical=Oposiciones&page=1&limit=10&order=ASC
+```
+
+### ✅ GET /products/:id - Obtener por ID
 
 ```typescript
-import { ValidateBody } from '@middleware/validation-pipe.js';
-import { CreateProductDto } from '@api/products/dtos/CreateProductDto.js';
+router.get('/:id', ValidateParams(ParamProductDto), (req, res, next) => productController.findOne(req, res, next));
+```
 
-// En rutas
-router.post('/products', ValidateBody(CreateProductDto), ProductController.create);
+**Parámetros Validados:**
 
-// En controlador - body ya está tipado
-async create(req: Request, res: Response, next: NextFunction) {
-  // req.body es instancia de CreateProductDto validada
-  const product = await ProductService.create(req.body);
-  res.status(HTTP_STATUS.CREATED).json(product);
+- `id`: integer > 0 (transformado automáticamente de string)
+
+**Ejemplo de uso:**
+
+```bash
+GET /api/products/123
+```
+
+### ✅ POST /products - Crear Producto
+
+```typescript
+router.post('/', ValidateBody(CreateProductDto), (req, res, next) => productController.create(req, res, next));
+```
+
+**Body Validado (campos requeridos):**
+
+- `documentId`: string 1-255 caracteres
+- `title`: string 1-255 caracteres
+- `SKU`: string 1-100 caracteres
+- `vertical`: array de Verticals (mínimo 1)
+- `type`: ProductType enum
+- `stripeCrm`: StripeCrm enum
+
+**Ejemplo de uso:**
+
+```json
+POST /api/products
+Content-Type: application/json
+
+{
+  "documentId": "DOC-2024-001",
+  "title": "Curso de Oposiciones 2024",
+  "SKU": "CURSO-OPO-001",
+  "vertical": ["Oposiciones"],
+  "type": "Curso",
+  "stripeCrm": "Stripe"
 }
 ```
 
-### Validación de Query Parameters
+### ✅ PUT /products/:id - Actualización Completa
 
 ```typescript
-import { ValidateQuery } from '@middleware/validation-pipe.js';
-import { QueryProductDto } from '@api/products/dtos/QueryProductDto.js';
-
-// Conversión automática de strings a números/booleanos
-router.get('/products', ValidateQuery(QueryProductDto), ProductController.getAll);
-
-// QueryProductDto.ts
-export class QueryProductDto {
-  @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  page?: number; // "10" → 10
-
-  @IsOptional()
-  @IsInt()
-  @Type(() => Number)
-  limit?: number;
-
-  @IsOptional()
-  @IsString()
-  search?: string;
-}
-```
-
-### Validación de Route Parameters
-
-```typescript
-import { ValidateParams } from '@middleware/validation-pipe.js';
-import { ParamProductDto } from '@api/products/dtos/ParamProductDto.js';
-
-router.get('/products/:id', ValidateParams(ParamProductDto), ProductController.getById);
-
-// ParamProductDto.ts
-export class ParamProductDto {
-  @IsUUID()
-  id: string;
-}
-```
-
-### Uso Avanzado con Opciones
-
-```typescript
-// Updates parciales - permite campos opcionales
-router.patch(
-  '/products/:id',
-  ValidateBody(UpdateProductDto, { skipMissingProperties: true }),
-  ProductController.update,
+router.put('/:id', ValidateParams(ParamProductDto), ValidateBody(UpdateProductDto), (req, res, next) =>
+  productController.update(req, res, next),
 );
-
-// Validación por grupos
-router.post('/products/draft', ValidateBody(ProductDto, { groups: ['draft'] }), ProductController.createDraft);
-
-// Permitir propiedades extra (no recomendado)
-router.post('/products/flexible', ValidateBody(ProductDto, { forbidNonWhitelisted: false }), ProductController.create);
 ```
 
-## 📝 Implementación Actual
+**Validaciones:**
+
+- Parámetro `id` validado
+- Body con UpdateProductDto (todos los campos opcionales)
+
+### ✅ PATCH /products/:id - Actualización Parcial
 
 ```typescript
-import { plainToInstance } from 'class-transformer';
-import { validate, type ValidationError as ClassValidatorError } from 'class-validator';
-import type { Request, Response, NextFunction } from 'express';
-import { VALIDATION_ERROR_MESSAGES } from '@constants/validation/index.js';
-import { ValidationError, InternalServerError } from '@utils/errors.js';
-
-export function ValidationPipe<T extends object>(
-  dtoClass: ClassType<T>,
-  type: ValidationType = 'body',
-  options?: ValidationPipeOptions,
-) {
-  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const dtoObject = plainToInstance(dtoClass, req[type], {
-        enableImplicitConversion: type === 'query' || type === 'params',
-        excludeExtraneousValues: false,
-      });
-
-      const errors = await validate(dtoObject, {
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        skipMissingProperties: false,
-        ...options,
-      });
-
-      if (errors.length > 0) {
-        const formattedErrors = formatValidationErrors(errors);
-        throw new ValidationError(JSON.stringify(formattedErrors));
-      }
-
-      req[type] = dtoObject as unknown;
-      next();
-    } catch (error) {
-      if (error instanceof ValidationError) {
-        next(error);
-      } else {
-        next(new InternalServerError(VALIDATION_ERROR_MESSAGES.INTERNAL_VALIDATION_ERROR));
-      }
-    }
-  };
-}
+router.patch(
+  '/:id',
+  ValidateParams(ParamProductDto),
+  ValidateBody(UpdateProductDto, { skipMissingProperties: true }),
+  (req, res, next) => productController.update(req, res, next),
+);
 ```
 
-## 🎯 Flujo de Validación
+**Características especiales:**
 
-```
-Request con body/query/params
-    ↓
-ValidationPipe transforma a instancia DTO
-    ↓
-Valida con decoradores class-validator
-    ↓
-├─ ¿Errores de validación?
-│   ├─ SÍ → throw new ValidationError(detalles)
-│   └─ NO → req[type] = dtoObject tipado
-    ↓
-├─ Error interno?
-│   └─ SÍ → throw new InternalServerError()
-    ↓
-globalErrorHandler captura el error
-    ↓
-Response con formato estándar
+- `skipMissingProperties: true` permite updates parciales
+- Solo valida campos presentes en el body
+
+### ✅ DELETE /products/:id - Eliminar Producto
+
+```typescript
+router.delete('/:id', ValidateParams(ParamProductDto), (req, res, next) => productController.delete(req, res, next));
 ```
 
-## 📤 Respuestas de Ejemplo
+**Validación:**
 
-### ✅ Validación Exitosa
+- Parámetro `id` debe ser integer > 0
 
-```http
+## 📊 Flujo de Validación Completo
+
+```
+1. Request → app.use(httpLogger) → req.log disponible
+    ↓
+2. Ruta con ValidationPipe → Validación automática
+    ↓
+3a. ✅ Validación OK → Controller → Service → Response
+    ↓
+3b. ❌ Validación Error → globalErrorHandler → Error Response
+    ↓
+4. Logs estructurados en cada paso
+```
+
+## 🔍 Ejemplos de Logs Generados
+
+### Request Válida
+
+```bash
 POST /api/products
-Content-Type: application/json
-
 {
-  "title": "Product Name",
-  "price": 29.99
-}
-
-HTTP/1.1 201 Created
-{
-  "id": "123",
-  "title": "Product Name",
-  "price": 29.99
+  "title": "Nuevo Curso",
+  "documentId": "DOC-001",
+  "SKU": "CURSO-001",
+  "vertical": ["Oposiciones"],
+  "type": "Curso",
+  "stripeCrm": "Stripe"
 }
 ```
 
-### ❌ Errores de Validación
+**Logs:**
 
-```http
+```json
+// Debug - Inicio validación
+{
+  "level": 20,
+  "msg": "Starting body validation with CreateProductDto",
+  "validationType": "body",
+  "dtoClass": "CreateProductDto",
+  "dataKeys": ["title", "documentId", "SKU", "vertical", "type", "stripeCrm"]
+}
+
+// Debug - Validación exitosa
+{
+  "level": 20,
+  "msg": "body validation successful",
+  "validationType": "body",
+  "dtoClass": "CreateProductDto"
+}
+```
+
+### Request con Errores
+
+```bash
 POST /api/products
-Content-Type: application/json
-
 {
   "title": "",
-  "price": -10,
-  "extraField": "not allowed"
+  "price": -100,
+  "invalidField": "not allowed"
 }
+```
 
-HTTP/1.1 400 Bad Request
+**Logs:**
+
+```json
+// Warning - Errores de validación
+{
+  "level": 30,
+  "msg": "Validation failed for body with 3 error(s)",
+  "validationType": "body",
+  "dtoClass": "CreateProductDto",
+  "validationErrors": [
+    {
+      "field": "title",
+      "constraints": ["title must not be empty"]
+    },
+    {
+      "field": "documentId",
+      "constraints": ["Document ID is required"]
+    },
+    {
+      "field": "invalidField",
+      "constraints": ["property invalidField should not exist"]
+    }
+  ]
+}
+```
+
+## 🎯 Respuestas de Error Estructuradas
+
+### Error de Validación (400)
+
+```json
 {
   "statusCode": 400,
-  "message": "Validation error",
-  "details": "[{\"field\":\"title\",\"constraints\":[\"title must be between 1 and 255 characters\"]},{\"field\":\"price\",\"constraints\":[\"price must be a positive number\"]},{\"field\":\"extraField\",\"constraints\":[\"property extraField should not exist\"]}]",
-  "timestamp": "2025-10-10T12:34:56.789Z",
+  "message": "[{\"field\":\"title\",\"constraints\":[\"title must not be empty\"]}]",
+  "timestamp": "2024-01-15T10:30:20.123Z",
   "path": "/api/products"
 }
 ```
 
-## ⚙️ Opciones de Configuración
+### Error de Recurso No Encontrado (404)
 
-### `ValidationPipeOptions`
-
-```typescript
-interface ValidationPipeOptions {
-  whitelist?: boolean; // Elimina propiedades no decoradas (default: true)
-  forbidNonWhitelisted?: boolean; // Rechaza propiedades extra (default: true)
-  skipMissingProperties?: boolean; // Permite campos opcionales (default: false)
-  enableImplicitConversion?: boolean; // Convierte tipos automáticamente (default: auto para query/params)
-  groups?: string[]; // Valida solo decoradores con grupos específicos
-}
-```
-
-### Casos de Uso por Opción
-
-| Opción                     | Create | Update Parcial | Query/Params |
-| -------------------------- | ------ | -------------- | ------------ |
-| `whitelist`                | ✅     | ✅             | ✅           |
-| `forbidNonWhitelisted`     | ✅     | ✅             | ✅           |
-| `skipMissingProperties`    | ❌     | ✅             | ✅           |
-| `enableImplicitConversion` | ❌     | ❌             | ✅ (auto)    |
-
-## 🎨 Mejores Prácticas Aplicadas
-
-### ✅ Sistema de Errores Centralizado
-
-```typescript
-// ❌ ANTES: Respuesta manual en middleware
-return res.status(400).json({
-  success: false,
-  message: 'Validation failed',
-  errors: formattedErrors,
-});
-
-// ✅ DESPUÉS: Delega al globalErrorHandler
-throw new ValidationError(JSON.stringify(formattedErrors));
-// globalErrorHandler se encarga del formato de respuesta
-```
-
-### ✅ Manejo de Errores Robusto
-
-```typescript
-// Distingue entre errores de validación y errores internos
-catch (error) {
-  if (error instanceof ValidationError) {
-    next(error); // Error operacional (400)
-  } else {
-    next(new InternalServerError(...)); // Error no operacional (500)
-  }
-}
-```
-
-### ✅ Type Safety Completo
-
-```typescript
-// ❌ ANTES: any types
-req.body = dtoObject as any;
-
-// ✅ DESPUÉS: unknown + type assertion
-req[type] = dtoObject as unknown;
-// Controlador recibe tipo correcto del DTO
-```
-
-### ✅ Sin Magic Numbers
-
-```typescript
-// ❌ ANTES: Status codes hardcodeados
-res.status(400).json(...);
-res.status(500).json(...);
-
-// ✅ DESPUÉS: Usa constantes del sistema
-throw new ValidationError(...); // Usa HTTP_STATUS.BAD_REQUEST internamente
-throw new InternalServerError(...); // Usa HTTP_STATUS.INTERNAL_SERVER_ERROR
-```
-
-### ✅ Evita Conflictos de Nombres
-
-```typescript
-// Renombra ValidationError de class-validator
-import { validate, type ValidationError as ClassValidatorError } from 'class-validator';
-// Usa ValidationError del sistema de errores
-import { ValidationError } from '@utils/errors.js';
-```
-
-## 📊 Formato de Errores Detallado
-
-### Errores Anidados
-
-```typescript
-// DTO con nested objects
-class AddressDto {
-  @IsString()
-  street: string;
-
-  @IsInt()
-  @Type(() => Number)
-  number: number;
-}
-
-class CreateUserDto {
-  @IsEmail()
-  email: string;
-
-  @ValidateNested()
-  @Type(() => AddressDto)
-  address: AddressDto;
-}
-
-// Error response
+```json
 {
-  "statusCode": 400,
-  "message": "Validation error",
-  "details": "[
-    {\"field\":\"email\",\"constraints\":[\"email must be a valid email\"]},
-    {\"field\":\"address.street\",\"constraints\":[\"street must be a string\"]},
-    {\"field\":\"address.number\",\"constraints\":[\"number must be an integer\"]}
-  ]",
-  "timestamp": "2025-10-10T12:34:56.789Z",
-  "path": "/api/users"
+  "statusCode": 404,
+  "message": "Product with ID 999 not found",
+  "timestamp": "2024-01-15T10:30:20.123Z",
+  "path": "/api/products/999"
 }
 ```
 
-## 🚀 Ventajas del Sistema
+### Error Interno (500)
 
-1. **🎯 Validación Consistente**: Mismo formato de error en toda la API
-2. **🔍 Debugging Mejorado**: Logs estructurados con contexto completo
-3. **📊 Type Safety**: Controladores reciben datos tipados y validados
-4. **🛡️ Seguridad**: Whitelist previene mass assignment vulnerabilities
-5. **🧹 Clean Code**: Lógica de validación centralizada, no duplicada
-6. **📝 Mantenibilidad**: Cambios en DTOs automáticamente actualizan validaciones
-7. **🔒 Robustez**: Distingue errores operacionales de crashes internos
+```json
+{
+  "statusCode": 500,
+  "message": "Internal server error",
+  "timestamp": "2024-01-15T10:30:20.123Z",
+  "path": "/api/products"
+}
+```
 
-## 🔗 Integración con el Ecosistema
+## ✅ Beneficios Obtenidos
 
-- **DTOs**: Clases con decoradores de `class-validator`
-- **ValidationError**: Error operacional (400) del sistema centralizado
-- **globalErrorHandler**: Captura y formatea todos los errores
-- **httpLogger**: Registra peticiones y errores con Pino
-- **Constantes**: `VALIDATION_ERROR_MESSAGES` centralizadas
+1. **🔒 Validación Automática**: Todos los endpoints validados
+2. **📊 Logging Estructurado**: Trazabilidad completa
+3. **🎯 Errores Consistentes**: Formato estándar en toda la API
+4. **🚀 Performance**: Validación antes de lógica de negocio
+5. **🛡️ Seguridad**: Whitelist automático de campos
+6. **🔍 Debugging Fácil**: Logs detallados para desarrollo
+7. **📈 Monitoreo**: Métricas de errores para producción
 
-## 📚 Referencias
+## 🧪 Cómo Probar
 
-- [class-validator Documentation](https://github.com/typestack/class-validator)
-- [class-transformer Documentation](https://github.com/typestack/class-transformer)
-- Sistema de Errores: `src/utils/errors.ts`
-- Global Error Handler: `src/middleware/errorHandler.ts`
+### 1. Iniciar el servidor
 
-Buenas prácticas:
+```bash
+npm run dev
+```
 
-- Para endpoints de actualización parcial (`PATCH`/`PUT` con campos opcionales), usa `skipMissingProperties: true` o aplica `@IsOptional()` en el DTO de update.
-- Mantén los mensajes de error en el idioma del proyecto (aquí: español) o usa un sistema i18n.
-- Evita exponer detalles internos en producción; transforma constraints si es necesario.
+### 2. Probar endpoint válido
+
+```bash
+curl -X POST http://localhost:3000/api/products \
+  -H "Content-Type: application/json" \
+  -d '{
+    "documentId": "DOC-001",
+    "title": "Test Product",
+    "SKU": "TEST-001",
+    "vertical": ["Oposiciones"],
+    "type": "Libro",
+    "stripeCrm": "Stripe"
+  }'
+```
+
+### 3. Probar validación de errores
+
+```bash
+curl -X POST http://localhost:3000/api/products \
+  -H "Content-Type: application/json" \
+  -d '{"title": ""}'
+```
+
+### 4. Probar query parameters
+
+```bash
+curl "http://localhost:3000/api/products?type=Libro&page=1&limit=5"
+```
+
+## 🎉 ¡Sistema Completo Implementado!
+
+El `validation-pipe` está ahora completamente integrado en las rutas de productos con:
+
+- ✅ Validación automática de body, query y params
+- ✅ Logging estructurado para debugging y monitoreo
+- ✅ Manejo de errores centralizado
+- ✅ Respuestas consistentes
+- ✅ Integración perfecta con la arquitectura existente
+
+¡Tu API ahora es robusta, escalable y fácil de mantener! 🚀

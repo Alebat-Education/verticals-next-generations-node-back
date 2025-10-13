@@ -3,16 +3,9 @@ import { validate, type ValidationError as ClassValidatorError } from 'class-val
 import type { Request, Response, NextFunction } from 'express';
 import { VALIDATION_ERROR_MESSAGES } from '@constants/validation/index.js';
 import { ValidationError, InternalServerError } from '@constants/errors/errors.js';
+import type { ValidationPipeOptions } from '@interfaces/validation-pipe.js';
 
 type ClassType<T extends object> = { new (): T };
-
-interface ValidationPipeOptions {
-  whitelist?: boolean;
-  forbidNonWhitelisted?: boolean;
-  skipMissingProperties?: boolean;
-  enableImplicitConversion?: boolean;
-  groups?: string[];
-}
 
 type ValidationType = 'body' | 'query' | 'params';
 
@@ -49,6 +42,8 @@ export function ValidationPipe<T extends object>(
   options?: ValidationPipeOptions,
 ) {
   return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+    const log = req.log;
+
     const defaultOptions: ValidationPipeOptions = {
       whitelist: true,
       forbidNonWhitelisted: true,
@@ -59,8 +54,19 @@ export function ValidationPipe<T extends object>(
     const validationOptions = { ...defaultOptions, ...options };
     const dataToValidate = req[type];
 
+    log.debug(
+      {
+        validationType: type,
+        dtoClass: dtoClass.name,
+        dataKeys: dataToValidate ? Object.keys(dataToValidate) : [],
+        validationOptions,
+      },
+      `Starting ${type} validation with ${dtoClass.name}`,
+    );
+
     if (!dataToValidate || (typeof dataToValidate === 'object' && Object.keys(dataToValidate).length === 0)) {
       if (type === 'body') {
+        log.debug({ validationType: type }, 'Empty body, skipping validation');
         return next();
       }
     }
@@ -91,8 +97,26 @@ export function ValidationPipe<T extends object>(
         const formattedErrors = formatValidationErrors(errors);
         const detailsMessage = JSON.stringify(formattedErrors);
 
+        log.warn(
+          {
+            validationType: type,
+            dtoClass: dtoClass.name,
+            validationErrors: formattedErrors,
+            originalData: dataToValidate,
+          },
+          `Validation failed for ${type} with ${errors.length} error(s)`,
+        );
+
         throw new ValidationError(detailsMessage);
       }
+
+      log.debug(
+        {
+          validationType: type,
+          dtoClass: dtoClass.name,
+        },
+        `${type} validation successful`,
+      );
 
       req[type] = dtoObject as unknown;
       next();
@@ -100,6 +124,16 @@ export function ValidationPipe<T extends object>(
       if (error instanceof ValidationError) {
         next(error);
       } else {
+        log.error(
+          {
+            err: error,
+            validationType: type,
+            dtoClass: dtoClass.name,
+            originalData: dataToValidate,
+          },
+          'Internal error during validation process',
+        );
+
         const internalError = new InternalServerError(VALIDATION_ERROR_MESSAGES.INTERNAL_VALIDATION_ERROR);
         next(internalError);
       }
