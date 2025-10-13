@@ -5,10 +5,10 @@ import { AUTH_MESSAGES, AUTH_CONFIG } from '@constants/auth/auth.js';
 import { verifyToken } from '@utils/jwt.js';
 
 /**
- * Middleware de autenticación JWT.
- * Verifica que el request tenga un token válido en el header Authorization.
- * Si es válido, agrega la informacion del usuario al request.
- * @throws UnauthorizedError si el token no es válido o no está presente.
+ * Middleware used to authenticate requests.
+ * Verifies that the request has a valid token in the Authorization header.
+ * If valid, adds the user information to the request.
+ * @throws UnauthorizedError if the token is invalid or not present.
  */
 
 export const authenticate = (req: Request, _res: Response, next: NextFunction) => {
