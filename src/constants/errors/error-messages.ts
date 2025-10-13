@@ -9,6 +9,7 @@ export const ERROR_MESSAGES = {
   TOKEN_EXPIRED: 'Token expired',
   TOKEN_MALFORMED: 'Token malformed',
   TOKEN_INVALID: 'Invalid token',
+  JWT_SECRET_UNDEFINED: 'JWT_SECRET is not defined in environment variables',
   INVALID_CREDENTIALS: 'Invalid credentials',
   TOO_MANY_REQUESTS: 'Too many requests, please try again later.',
   RETRY_AFTER: '1 minute',
