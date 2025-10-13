@@ -2,19 +2,19 @@ import bcrypt from 'bcrypt';
 import { AUTH_CONFIG } from '@constants/auth/auth.js';
 
 /**
- * Hashea una contraseña utilizando bcrypt.
- * @param password - La contraseña en texto plano a hashear.
- * @return La contraseña hasheada.
+ * Hashes a password using bcrypt.
+ * @param password - The plain text password to hash.
+ * @return The hashed password.
  */
 export const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, AUTH_CONFIG.BCRYPT_SALT_ROUNDS);
 };
 
 /**
- * Compara la contraseña en texto plano con su hash.
- * @param password - La contraseña en texto plano.
- * @param hash - Hash de la contraseña almacenada.
- * @return Verdadero si coinciden, falso en caso contrario.
+ * Compares the plain text password with its hash.
+ * @param password - The plain text password.
+ * @param hash - The stored password hash.
+ * @return True if they match, false otherwise.
  */
 export const comparePassword = async (password: string, hash: string): Promise<boolean> => {
   return await bcrypt.compare(password, hash);

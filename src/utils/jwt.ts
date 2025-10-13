@@ -12,9 +12,9 @@ if (!JWT_SECRET) {
 }
 
 /**
- * Genera un token JWT con el payload proporcionado.
- * @param payload - El payload a incluir en el token.
- * @return El token JWT generado.
+ * Generates a JWT token.
+ * @param payload - The payload to include in the token.
+ * @return The generated JWT token.
  */
 export const generateToken = (payload: JWTPayload): string => {
   const expireTime = parseInt(JWT_EXPIRES_IN || '3600', 10);
@@ -24,10 +24,10 @@ export const generateToken = (payload: JWTPayload): string => {
 };
 
 /**
- * Verifica y decodifica un token JWT.
- * @param token - El token JWT a verificar.
- * @return El payload decodificado si el token es válido.
- * @throws UnauthorizedError si el token es inválido o ha expirado.
+ * Verifies and decodes a JWT token.
+ * @param token - The JWT token to verify.
+ * @return The decoded payload if the token is valid.
+ * @throws UnauthorizedError if the token is invalid or has expired.
  */
 export const verifyToken = (token: string): JWTPayload => {
   try {
