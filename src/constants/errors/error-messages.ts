@@ -10,4 +10,6 @@ export const ERROR_MESSAGES = {
   TOKEN_MALFORMED: 'Token malformed',
   TOKEN_INVALID: 'Invalid token',
   INVALID_CREDENTIALS: 'Invalid credentials',
+  TOO_MANY_REQUESTS: 'Too many requests, please try again later.',
+  RETRY_AFTER: '1 minute',
 } as const;
