@@ -49,6 +49,7 @@ export const commitLintBack = {
         'types',
         'utils',
         'validation',
+        'documentation',
       ],
     ],
   },

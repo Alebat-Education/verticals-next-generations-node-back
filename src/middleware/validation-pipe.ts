@@ -2,7 +2,7 @@ import { plainToInstance } from 'class-transformer';
 import { validate, type ValidationError as ClassValidatorError } from 'class-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { VALIDATION_ERROR_MESSAGES } from '@constants/validation/index.js';
-import { ValidationError, InternalServerError } from '@utils/errors.js';
+import { ValidationError, InternalServerError } from '@constants/errors/errors.js';
 
 type ClassType<T extends object> = { new (): T };
 

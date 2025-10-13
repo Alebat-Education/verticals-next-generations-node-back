@@ -1,24 +1,15 @@
 import { productController } from '@/api/products/productController.js';
 import type { Router as ExpressRouter } from 'express';
 import { Router } from 'express';
-import { ValidateBody, ValidateQuery, ValidateParams } from '@middleware/validation-pipe.js';
-import { CreateProductDto } from '@/api/products/dtos/CreateProductDto.js';
-import { UpdateProductDto } from '@/api/products/dtos/UpdateProductDto.js';
-import { QueryProductDto } from '@/api/products/dtos/QueryProductDto.js';
-import { ParamProductDto } from '@/api/products/dtos/ParamProductDto.js';
 
 const router: ExpressRouter = Router();
+// basic CRUD routes
+router.get('/', (req, res, next) => productController.findAll(req, res, next));
+router.get('/:id', (req, res, next) => productController.findOne(req, res, next));
+router.post('/', (req, res, next) => productController.create(req, res, next));
+router.put('/:id', (req, res, next) => productController.update(req, res, next));
+router.delete('/:id', (req, res, next) => productController.delete(req, res, next));
 
-router.get('/', ValidateQuery(QueryProductDto), (req, res) => productController.findAll(req, res));
-router.get('/:id', ValidateParams(ParamProductDto), (req, res) => productController.findOne(req, res));
-router.post('/', ValidateBody(CreateProductDto), (req, res) => productController.create(req, res));
-router.put(
-  '/:id',
-  ValidateParams(ParamProductDto),
-  ValidateBody(UpdateProductDto, { skipMissingProperties: true }),
-  (req, res) => productController.update(req, res),
-);
-router.delete('/:id', ValidateParams(ParamProductDto), (req, res) => productController.delete(req, res));
-router.get('/type/:type', (req, res) => productController.getByType(req, res));
+// specific routes ...
 
 export default router;

@@ -1,5 +1,5 @@
 import { ERROR_MESSAGES } from '@errors/error-messages.js';
-import { HTTP_STATUS } from '@constants/common/server.js';
+import { HTTP_STATUS } from '@constants/common/http.js';
 
 export abstract class BaseError extends Error {
   public readonly statusCode: number;
