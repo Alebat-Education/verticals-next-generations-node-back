@@ -8,7 +8,7 @@ const JWT_SECRET = CONFIG.JWT_SECRET;
 const JWT_EXPIRES_IN = CONFIG.JWT_EXPIRES_IN;
 
 if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET is not defined in environment variables');
+  throw new Error(ERROR_MESSAGES.JWT_SECRET_UNDEFINED);
 }
 
 /**
