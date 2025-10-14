@@ -24,8 +24,8 @@
     "paths": {
       "@common/*": ["./src/api/common/*"],
       "@products/*": ["./src/products/*"],
-      "@constants/*": ["./src/constants/*"],
       "@errors/*": ["./src/constants/errors/*"],
+      "@constants/*": ["./src/constants/*"],
       "@interfaces/*": ["./src/interfaces/*"],
       "@enums/*": ["./src/interfaces/Enums/*"],
       "@middleware/*": ["./src/middleware/*"],
