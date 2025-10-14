@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ValidationError } from '@constants/errors/errors.js';
-import { VALIDATION_LANGUAGE, SUPPORTED_LANGUAGES } from '@constants/errors/error-messages.js';
+import { ValidationError } from '@errors/errors.js';
+import { VALIDATION_LANGUAGE, SUPPORTED_LANGUAGES } from '@errors/error-messages.js';
 
 type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 

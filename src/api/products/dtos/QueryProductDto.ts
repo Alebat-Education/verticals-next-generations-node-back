@@ -2,46 +2,42 @@ import { IsEnum, IsOptional, IsString, IsInt, Min, Max } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { ProductType } from '@enums/product.js';
 import { Verticals } from '@enums/global.js';
-import { PRODUCT_VALIDATION_MESSAGES, VALIDATION_RULES } from '@constants/validation/index.js';
-
-const { NUMERIC } = VALIDATION_RULES;
-const MSG = PRODUCT_VALIDATION_MESSAGES;
 
 export class QueryProductDto {
-  @IsEnum(ProductType, { message: MSG.TYPE.MUST_BE_VALID })
+  @IsEnum(ProductType, { message: 'Product type must be a valid value' })
   @IsOptional()
   type?: ProductType;
 
-  @IsEnum(Verticals, { message: MSG.VERTICAL.EACH_VALID })
+  @IsEnum(Verticals, { message: 'Vertical must be a valid value' })
   @IsOptional()
   vertical?: Verticals;
 
-  @IsString({ message: MSG.SKU.MUST_BE_STRING })
+  @IsString({ message: 'SKU must be a string' })
   @IsOptional()
   SKU?: string;
 
-  @IsString({ message: MSG.SLUG.MUST_BE_STRING })
+  @IsString({ message: 'Slug must be a string' })
   @IsOptional()
   slug?: string;
 
   @Transform(({ value }) => parseInt(value, 10))
-  @IsInt({ message: MSG.PAGE.MUST_BE_INTEGER })
-  @Min(NUMERIC.PAGE_MIN, { message: MSG.PAGE.MIN_VALUE })
+  @IsInt({ message: 'Page must be an integer' })
+  @Min(1, { message: 'Page must be at least 1' })
   @IsOptional()
   page?: number;
 
   @Transform(({ value }) => parseInt(value, 10))
-  @IsInt({ message: MSG.LIMIT.MUST_BE_INTEGER })
-  @Min(NUMERIC.LIMIT_MIN, { message: MSG.LIMIT.MIN_VALUE })
-  @Max(NUMERIC.LIMIT_MAX, { message: MSG.LIMIT.MAX_VALUE })
+  @IsInt({ message: 'Limit must be an integer' })
+  @Min(1, { message: 'Limit must be at least 1' })
+  @Max(100, { message: 'Limit must not exceed 100' })
   @IsOptional()
   limit?: number;
 
-  @IsString({ message: MSG.SORT_BY.MUST_BE_STRING })
+  @IsString({ message: 'Sort by must be a string' })
   @IsOptional()
   sortBy?: string;
 
-  @IsEnum(['ASC', 'DESC'], { message: MSG.ORDER_DIRECTION.MUST_BE_VALID })
+  @IsEnum(['ASC', 'DESC'], { message: 'Order direction must be ASC or DESC' })
   @IsOptional()
   order?: 'ASC' | 'DESC';
 }

@@ -35,8 +35,7 @@
       "@tests/*": ["./src/tests/*"],
       "@migrations/*": ["./src/migrations/*"],
       "@/*": ["./src/*"],
-      "@api/*": ["./src/api/*"],
-      "@routes/*": ["./src/routes/*"]
+      "@api/*": ["./src/api/*"]
     }
   },
   "include": ["src/**/*.ts"],

@@ -1,13 +1,14 @@
 import { plainToInstance } from 'class-transformer';
 import { validate, type ValidationError as ClassValidatorError } from 'class-validator';
-import type { Request, Response, NextFunction } from 'express';
-import { VALIDATION_ERROR_MESSAGES } from '@constants/validation/index.js';
-import { ValidationError, InternalServerError } from '@constants/errors/errors.js';
-import type { ValidationPipeOptions } from '@interfaces/validation-pipe.js';
-
-type ClassType<T extends object> = { new (): T };
-
-type ValidationType = 'body' | 'query' | 'params';
+import type { Response, NextFunction } from 'express';
+import { VALIDATION_ERROR_MESSAGES, VALIDATION_TYPES, VALIDATION_OPTIONS } from '@constants/errors/validation/index.js';
+import { ValidationError, InternalServerError } from '@errors/errors.js';
+import type {
+  ValidationPipeOptions,
+  ValidationType,
+  ClassType,
+  RequestWithValidation,
+} from '@interfaces/validation-pipe.js';
 
 function formatValidationErrors(errors: ClassValidatorError[]): Array<{ field: string; constraints: string[] }> {
   const formatError = (
@@ -38,35 +39,22 @@ function formatValidationErrors(errors: ClassValidatorError[]): Array<{ field: s
 
 export function ValidationPipe<T extends object>(
   dtoClass: ClassType<T>,
-  type: ValidationType = 'body',
+  type: ValidationType = VALIDATION_TYPES.BODY,
   options?: ValidationPipeOptions,
 ) {
-  return async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-    const log = req.log;
-
+  return async (req: RequestWithValidation, _res: Response, next: NextFunction): Promise<void> => {
     const defaultOptions: ValidationPipeOptions = {
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      skipMissingProperties: false,
-      enableImplicitConversion: type === 'query' || type === 'params',
+      whitelist: VALIDATION_OPTIONS.DEFAULT.WHITELIST,
+      forbidNonWhitelisted: VALIDATION_OPTIONS.DEFAULT.FORBID_NON_WHITELISTED,
+      skipMissingProperties: VALIDATION_OPTIONS.DEFAULT.SKIP_MISSING_PROPERTIES,
+      enableImplicitConversion: type === VALIDATION_TYPES.QUERY || type === VALIDATION_TYPES.PARAMS,
     };
 
     const validationOptions = { ...defaultOptions, ...options };
     const dataToValidate = req[type];
 
-    log.debug(
-      {
-        validationType: type,
-        dtoClass: dtoClass.name,
-        dataKeys: dataToValidate ? Object.keys(dataToValidate) : [],
-        validationOptions,
-      },
-      `Starting ${type} validation with ${dtoClass.name}`,
-    );
-
     if (!dataToValidate || (typeof dataToValidate === 'object' && Object.keys(dataToValidate).length === 0)) {
-      if (type === 'body') {
-        log.debug({ validationType: type }, 'Empty body, skipping validation');
+      if (type === VALIDATION_TYPES.BODY) {
         return next();
       }
     }
@@ -74,16 +62,18 @@ export function ValidationPipe<T extends object>(
     try {
       const dtoObject = plainToInstance(dtoClass, dataToValidate, {
         enableImplicitConversion: validationOptions.enableImplicitConversion ?? false,
-        excludeExtraneousValues: false,
+        excludeExtraneousValues: VALIDATION_OPTIONS.DEFAULT.EXCLUDE_EXTRANEOUS_VALUES,
       });
 
       const validateOptions: Record<string, unknown> = {
-        whitelist: validationOptions.whitelist ?? true,
-        forbidNonWhitelisted: validationOptions.forbidNonWhitelisted ?? true,
-        skipMissingProperties: validationOptions.skipMissingProperties ?? false,
+        whitelist: validationOptions.whitelist ?? VALIDATION_OPTIONS.DEFAULT.WHITELIST,
+        forbidNonWhitelisted:
+          validationOptions.forbidNonWhitelisted ?? VALIDATION_OPTIONS.DEFAULT.FORBID_NON_WHITELISTED,
+        skipMissingProperties:
+          validationOptions.skipMissingProperties ?? VALIDATION_OPTIONS.DEFAULT.SKIP_MISSING_PROPERTIES,
         validationError: {
-          target: false,
-          value: false,
+          target: VALIDATION_OPTIONS.VALIDATION_ERROR.TARGET,
+          value: VALIDATION_OPTIONS.VALIDATION_ERROR.VALUE,
         },
       };
 
@@ -97,43 +87,14 @@ export function ValidationPipe<T extends object>(
         const formattedErrors = formatValidationErrors(errors);
         const detailsMessage = JSON.stringify(formattedErrors);
 
-        log.warn(
-          {
-            validationType: type,
-            dtoClass: dtoClass.name,
-            validationErrors: formattedErrors,
-            originalData: dataToValidate,
-          },
-          `Validation failed for ${type} with ${errors.length} error(s)`,
-        );
-
         throw new ValidationError(detailsMessage);
       }
-
-      log.debug(
-        {
-          validationType: type,
-          dtoClass: dtoClass.name,
-        },
-        `${type} validation successful`,
-      );
-
       req[type] = dtoObject as unknown;
       next();
     } catch (error) {
       if (error instanceof ValidationError) {
         next(error);
       } else {
-        log.error(
-          {
-            err: error,
-            validationType: type,
-            dtoClass: dtoClass.name,
-            originalData: dataToValidate,
-          },
-          'Internal error during validation process',
-        );
-
         const internalError = new InternalServerError(VALIDATION_ERROR_MESSAGES.INTERNAL_VALIDATION_ERROR);
         next(internalError);
       }
@@ -142,10 +103,10 @@ export function ValidationPipe<T extends object>(
 }
 
 export const ValidateBody = <T extends object>(dtoClass: ClassType<T>, options?: ValidationPipeOptions) =>
-  ValidationPipe(dtoClass, 'body', options);
+  ValidationPipe(dtoClass, VALIDATION_TYPES.BODY, options);
 
 export const ValidateQuery = <T extends object>(dtoClass: ClassType<T>, options?: ValidationPipeOptions) =>
-  ValidationPipe(dtoClass, 'query', options);
+  ValidationPipe(dtoClass, VALIDATION_TYPES.QUERY, options);
 
 export const ValidateParams = <T extends object>(dtoClass: ClassType<T>, options?: ValidationPipeOptions) =>
-  ValidationPipe(dtoClass, 'params', options);
+  ValidationPipe(dtoClass, VALIDATION_TYPES.PARAMS, options);

@@ -1,3 +1,7 @@
+import type { Request } from 'express';
+
+export type ValidationType = 'body' | 'query' | 'params';
+
 export interface ValidationPipeOptions {
   whitelist?: boolean;
   forbidNonWhitelisted?: boolean;
@@ -5,3 +9,9 @@ export interface ValidationPipeOptions {
   enableImplicitConversion?: boolean;
   groups?: string[];
 }
+
+export type ClassType<T extends object> = { new (): T };
+
+export type RequestWithValidation = Request & {
+  [K in ValidationType]: unknown;
+};

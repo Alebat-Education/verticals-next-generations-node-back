@@ -19,138 +19,134 @@ import {
   SubjectDataType,
 } from '@enums/product.js';
 import { Verticals, StripeCrm } from '@enums/global.js';
-import { PRODUCT_VALIDATION_MESSAGES, VALIDATION_RULES } from '@constants/validation/index.js';
-
-const { STRING_LENGTH, NUMERIC, ARRAY } = VALIDATION_RULES;
-const MSG = PRODUCT_VALIDATION_MESSAGES;
 
 export class UpdateProductDto {
-  @IsString({ message: MSG.DOCUMENT_ID.MUST_BE_STRING })
+  @IsString({ message: 'Document ID must be a string' })
   @IsOptional()
-  @Length(STRING_LENGTH.DOCUMENT_ID.MIN, STRING_LENGTH.DOCUMENT_ID.MAX, { message: MSG.DOCUMENT_ID.LENGTH })
+  @Length(1, 255, { message: 'Document ID must be between 1 and 255 characters' })
   documentId?: string;
 
-  @IsString({ message: MSG.TITLE.MUST_BE_STRING })
+  @IsString({ message: 'Title must be a string' })
   @IsOptional()
-  @Length(STRING_LENGTH.TITLE.MIN, STRING_LENGTH.TITLE.MAX, { message: MSG.TITLE.LENGTH })
+  @Length(1, 255, { message: 'Title must be between 1 and 255 characters' })
   title?: string;
 
-  @IsEnum(SubjectDataType, { message: MSG.SUBJECT_DATA.MUST_BE_VALID })
+  @IsEnum(SubjectDataType, { message: 'Subject data must be a valid value' })
   @IsOptional()
   subjectData?: SubjectDataType;
 
-  @IsString({ message: MSG.SLUG.MUST_BE_STRING })
+  @IsString({ message: 'Slug must be a string' })
   @IsOptional()
-  @Length(STRING_LENGTH.SLUG.MIN, STRING_LENGTH.SLUG.MAX, { message: MSG.SLUG.LENGTH })
+  @Length(1, 255, { message: 'Slug must be between 1 and 255 characters' })
   slug?: string;
 
-  @IsInt({ message: MSG.ORDER.MUST_BE_INTEGER })
+  @IsInt({ message: 'Order must be an integer' })
   @IsOptional()
-  @Min(NUMERIC.ORDER_MIN, { message: MSG.ORDER.MUST_BE_POSITIVE })
+  @Min(0, { message: 'Order must be a positive number' })
   order?: number;
 
-  @IsString({ message: MSG.SKU.MUST_BE_STRING })
+  @IsString({ message: 'SKU must be a string' })
   @IsOptional()
-  @Length(STRING_LENGTH.SKU.MIN, STRING_LENGTH.SKU.MAX, { message: MSG.SKU.LENGTH })
+  @Length(1, 100, { message: 'SKU must be between 1 and 100 characters' })
   SKU?: string;
 
-  @IsArray({ message: MSG.VERTICAL.MUST_BE_ARRAY })
+  @IsArray({ message: 'Vertical must be an array' })
   @IsOptional()
-  @ArrayMinSize(ARRAY.VERTICAL_MIN_SIZE, { message: MSG.VERTICAL.MIN_SIZE })
-  @IsEnum(Verticals, { each: true, message: MSG.VERTICAL.EACH_VALID })
+  @ArrayMinSize(1, { message: 'Vertical must contain at least 1 item' })
+  @IsEnum(Verticals, { each: true, message: 'Each vertical must be a valid value' })
   vertical?: Verticals[];
 
-  @IsEnum(ProductType, { message: MSG.TYPE.MUST_BE_VALID })
+  @IsEnum(ProductType, { message: 'Product type must be a valid value' })
   @IsOptional()
   type?: ProductType;
 
-  @IsString({ message: MSG.STRIPE_ID.MUST_BE_STRING })
+  @IsString({ message: 'Stripe ID must be a string' })
   @IsOptional()
-  @Length(STRING_LENGTH.STRIPE_ID.MIN, STRING_LENGTH.STRIPE_ID.MAX, { message: MSG.STRIPE_ID.LENGTH })
+  @Length(1, 255, { message: 'Stripe ID must be between 1 and 255 characters' })
   stripeID?: string;
 
-  @IsEnum(StripeCrm, { message: MSG.STRIPE_CRM.MUST_BE_VALID })
+  @IsEnum(StripeCrm, { message: 'Stripe CRM must be a valid value' })
   @IsOptional()
   stripeCrm?: StripeCrm;
 
-  @IsEnum(PurchaseType, { message: MSG.PURCHASE_TYPE.MUST_BE_VALID })
+  @IsEnum(PurchaseType, { message: 'Purchase type must be a valid value' })
   @IsOptional()
   purchaseType?: PurchaseType;
 
-  @IsBoolean({ message: MSG.ENROL_BUTTON.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Enrol button must be a boolean' })
   @IsOptional()
   enrolButton?: boolean;
 
-  @IsBoolean({ message: MSG.FORM_BUTTON.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Form button must be a boolean' })
   @IsOptional()
   formButton?: boolean;
 
-  @IsBoolean({ message: MSG.IS_SOON.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Is soon must be a boolean' })
   @IsOptional()
   isSoon?: boolean;
 
-  @IsBoolean({ message: MSG.INSTALMENTS_PRICE.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Instalments price must be a boolean' })
   @IsOptional()
   instalmentsPrice?: boolean;
 
-  @IsBoolean({ message: MSG.CONTRACT.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Contract must be a boolean' })
   @IsOptional()
   contract?: boolean;
 
-  @IsEnum(AcronymType, { message: MSG.ACRONYM.MUST_BE_VALID })
+  @IsEnum(AcronymType, { message: 'Acronym must be a valid value' })
   @IsOptional()
   acronym?: AcronymType;
 
-  @IsEnum(PresencialType, { message: MSG.PRESENCIAL_TYPE.MUST_BE_VALID })
+  @IsEnum(PresencialType, { message: 'Presencial type must be a valid value' })
   @IsOptional()
   presencialType?: PresencialType;
 
-  @IsBoolean({ message: MSG.LIMITED_PLACES.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Limited places must be a boolean' })
   @IsOptional()
   limitedPlaces?: boolean;
 
-  @IsEnum(SubscriptionType, { message: MSG.SUBSCRIPTION_TYPE.MUST_BE_VALID })
+  @IsEnum(SubscriptionType, { message: 'Subscription type must be a valid value' })
   @IsOptional()
   subscriptionType?: SubscriptionType;
 
-  @IsInt({ message: MSG.TRIAL_PERIOD_DAYS.MUST_BE_INTEGER })
+  @IsInt({ message: 'Trial period days must be an integer' })
   @IsOptional()
-  @Min(NUMERIC.TRIAL_PERIOD_DAYS_MIN, { message: MSG.TRIAL_PERIOD_DAYS.MUST_BE_POSITIVE })
+  @Min(0, { message: 'Trial period days must be a positive number' })
   trialPeriodDays?: number;
 
-  @IsString({ message: MSG.STRIPE_DESCRIPTION.MUST_BE_STRING })
+  @IsString({ message: 'Stripe description must be a string' })
   @IsOptional()
   stripeDescription?: string;
 
-  @IsString({ message: MSG.CARD_SUBSCRIPTION.MUST_BE_STRING })
+  @IsString({ message: 'Card subscription must be a string' })
   @IsOptional()
   cardSubscription?: string;
 
-  @IsString({ message: MSG.SYLLABUS.MUST_BE_STRING })
+  @IsString({ message: 'Syllabus must be a string' })
   @IsOptional()
   syllabus?: string;
 
-  @IsString({ message: MSG.PRESENTATION.MUST_BE_STRING })
+  @IsString({ message: 'Presentation must be a string' })
   @IsOptional()
   presentation?: string;
 
-  @IsString({ message: MSG.OBJECTIVES.MUST_BE_STRING })
+  @IsString({ message: 'Objectives must be a string' })
   @IsOptional()
   objectives?: string;
 
-  @IsString({ message: MSG.DIRECTED.MUST_BE_STRING })
+  @IsString({ message: 'Directed must be a string' })
   @IsOptional()
   directed?: string;
 
-  @IsBoolean({ message: MSG.HAS_LAAB_CONNECTION.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Has LAAB connection must be a boolean' })
   @IsOptional()
   hasLaabConnection?: boolean;
 
-  @IsBoolean({ message: MSG.IS_PREMIUM.MUST_BE_BOOLEAN })
+  @IsBoolean({ message: 'Is premium must be a boolean' })
   @IsOptional()
   isPremium?: boolean;
 
-  @IsDateString({}, { message: MSG.PUBLISHED_AT.MUST_BE_VALID_DATE })
+  @IsDateString({}, { message: 'Published at must be a valid date' })
   @IsOptional()
   publishedAt?: Date;
 }
