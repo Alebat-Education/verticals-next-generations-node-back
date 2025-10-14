@@ -34,6 +34,7 @@
       "@utils/*": ["./src/utils/*"],
       "@tests/*": ["./src/tests/*"],
       "@migrations/*": ["./src/migrations/*"],
+      "@decorators/*": ["./src/decorators/*"],
       "@/*": ["./src/*"],
       "@api/*": ["./src/api/*"]
     }
