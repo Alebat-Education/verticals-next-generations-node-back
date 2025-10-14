@@ -78,10 +78,6 @@ export abstract class BaseService<T extends EntityWithId> {
     return requestedRelations.some(rel => componentFields.includes(rel) || componentPropertyKeys.includes(rel));
   }
 
-  async findAll(options?: FindManyOptions<T>): Promise<T[]> {
-    return this.repository.find(options);
-  }
-
   async findAllWithRelations(relations?: string[]): Promise<T[]> {
     const parsedRelations = this.parseRelations(relations);
 
@@ -119,6 +115,10 @@ export abstract class BaseService<T extends EntityWithId> {
     }
 
     return entity;
+  }
+
+  async findAll(options?: FindManyOptions<T>): Promise<T[]> {
+    return this.repository.find(options);
   }
 
   async findById(id: number | string, options?: Omit<FindOneOptions<T>, 'where'>): Promise<T | null> {
