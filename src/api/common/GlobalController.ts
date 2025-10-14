@@ -12,6 +12,7 @@ import { NotFoundError, ValidationError } from '@constants/errors/errors.js';
 import type { NextFunction, Request, Response } from 'express';
 import type { DeepPartial } from 'typeorm';
 import { isValidId } from '@utils/isValidId.js';
+import { parseInclude } from '@utils/parseInclude.js';
 
 export abstract class BaseController<T extends EntityWithId> {
   protected service: BaseService<T>;
@@ -22,27 +23,9 @@ export abstract class BaseController<T extends EntityWithId> {
     this.resourceName = resourceName;
   }
 
-  private parseInclude(include: any): string[] | undefined {
-    if (!include || typeof include !== 'string') {
-      return undefined;
-    }
-
-    const relations = include
-      .split(',')
-      .map(r => r.trim())
-      .filter(r => r.length > 0);
-
-    const maxDepth = Math.max(...relations.map(r => r.split('.').length));
-    if (maxDepth > 3) {
-      throw new ValidationError('Include depth cannot exceed 3 levels');
-    }
-
-    return relations.length > 0 ? relations : undefined;
-  }
-
   async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const relations = this.parseInclude(req.query.include);
+      const relations = parseInclude(req.query.include);
       const resources = await this.service.findAllWithRelations(relations);
 
       const response: ApiSuccessResponse<T[]> = {
@@ -63,7 +46,7 @@ export abstract class BaseController<T extends EntityWithId> {
         throw new ValidationError(ERROR_INVALID_ID);
       }
 
-      const relations = this.parseInclude(req.query.include);
+      const relations = parseInclude(req.query.include);
       const resource = await this.service.findByIdWithRelations(Number(id), relations);
 
       if (!resource) {
