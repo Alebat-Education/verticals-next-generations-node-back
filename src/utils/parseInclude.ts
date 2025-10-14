@@ -64,25 +64,6 @@ export interface SeparatedRelations {
  * - Checks for dangerous characters to prevent injection attacks
  * - Validates the number of relations to prevent abuse
  *
- * @example
- * ```typescript
- * // Basic usage
- * parseInclude('fullPrice,cardTags')
- * // => ['fullPrice', 'cardTags']
- *
- * // Nested relations
- * parseInclude('categories.products')
- * // => ['categories.products']
- *
- * // With custom options
- * parseInclude('a.b.c', { maxDepth: 2 })
- * // => throws ValidationError
- *
- * // Empty or invalid input
- * parseInclude(null)
- * // => undefined
- * ```
- *
  * @param include - The include query parameter value (typically from req.query.include)
  * @param options - Optional configuration to override defaults
  * @returns Array of relation strings if valid, undefined if no valid relations
@@ -139,26 +120,6 @@ export function parseInclude(include: unknown, options: ParseIncludeOptions = {}
  * - Load TypeORM relations using standard `.findOne({ relations: [...] })`
  * - Load components using the ComponentService transformation logic
  *
- * @example
- * ```typescript
- * const relations = ['categories', 'fullPrice', 'cardTags'];
- * const validTypeORMRelations = ['categories', 'user'];
- *
- * separateIncludeTypes(relations, validTypeORMRelations)
- * // => {
- * //   typeorm: ['categories'],
- * //   components: ['fullPrice', 'cardTags']
- * // }
- *
- * // Handles nested relations
- * const nestedRelations = ['categories.products', 'fullPrice'];
- * separateIncludeTypes(nestedRelations, ['categories'])
- * // => {
- * //   typeorm: ['categories.products'],
- * //   components: ['fullPrice']
- * // }
- * ```
- *
  * @param relations - Array of parsed relation strings
  * @param validTypeORMRelations - Array of valid TypeORM relation names for the entity
  * @returns Object containing separated typeorm and component relations
@@ -177,15 +138,11 @@ export function separateIncludeTypes(
   const components: string[] = [];
 
   for (const relation of relations) {
-    // Extract the root relation name (first segment before any dots)
-    // Example: 'categories.products.images' -> 'categories'
     const rootRelation = relation.split('.')[0];
 
-    // Check if the root relation is a valid TypeORM relation
     if (rootRelation && validTypeORMRelations.includes(rootRelation)) {
       typeorm.push(relation);
     } else {
-      // Otherwise, it's a component
       components.push(relation);
     }
   }
