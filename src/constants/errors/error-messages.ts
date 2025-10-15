@@ -14,3 +14,9 @@ export const ERROR_MESSAGES = {
   TOO_MANY_REQUESTS: 'Too many requests, please try again later.',
   RETRY_AFTER: '1 minute',
 } as const;
+
+export const VALIDATION_LANGUAGE = {
+  NOT_SUPPORTED: 'Language not supported. Supported languages are: es, en, fr',
+};
+
+export const SUPPORTED_LANGUAGES = ['es', 'en', 'fr'] as const;
