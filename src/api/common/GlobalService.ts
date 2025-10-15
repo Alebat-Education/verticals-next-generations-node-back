@@ -7,7 +7,7 @@ import type {
   FindOptionsRelations,
 } from 'typeorm';
 import { getComponentFields, getComponentPropertyKeys, hasComponents } from '@decorators/StrapiComponent.js';
-import { ComponentService } from '@common/ComponentService.js';
+import { ComponentService } from '@common/components/ComponentService.js';
 
 export interface EntityWithId {
   id: number | string;
@@ -20,101 +20,6 @@ export abstract class BaseService<T extends EntityWithId> {
   constructor(repository: Repository<T>) {
     this.repository = repository;
     this.entityClass = repository.target as Function;
-  }
-
-  protected parseRelations(requestedRelations?: string[]): FindOptionsRelations<T> | undefined {
-    if (!requestedRelations || requestedRelations.length === 0) {
-      return undefined;
-    }
-
-    const result: Record<string, boolean | Record<string, unknown>> = {};
-
-    const componentFields = hasComponents(this.entityClass) ? getComponentFields(this.entityClass) : [];
-    const componentPropertyKeys = hasComponents(this.entityClass) ? getComponentPropertyKeys(this.entityClass) : [];
-
-    let needsComponentsJoin = false;
-
-    for (const relation of requestedRelations) {
-      const isComponentField = componentFields.includes(relation) || componentPropertyKeys.includes(relation);
-
-      if (isComponentField) {
-        needsComponentsJoin = true;
-      } else {
-        const parts = relation.split('.');
-        let current: Record<string, unknown> = result;
-
-        for (let i = 0; i < parts.length; i++) {
-          const part = parts[i];
-
-          if (!part) continue;
-
-          if (i === parts.length - 1) {
-            current[part] = current[part] || true;
-          } else {
-            if (typeof current[part] !== 'object' || current[part] === null) {
-              current[part] = {};
-            }
-            current = current[part] as Record<string, unknown>;
-          }
-        }
-      }
-    }
-
-    if (needsComponentsJoin) {
-      result['components'] = true;
-    }
-
-    return Object.keys(result).length > 0 ? (result as FindOptionsRelations<T>) : undefined;
-  }
-
-  protected shouldTransformComponents(requestedRelations?: string[]): boolean {
-    if (!hasComponents(this.entityClass) || !requestedRelations || requestedRelations.length === 0) {
-      return false;
-    }
-
-    const componentFields = getComponentFields(this.entityClass);
-    const componentPropertyKeys = getComponentPropertyKeys(this.entityClass);
-
-    return requestedRelations.some(rel => componentFields.includes(rel) || componentPropertyKeys.includes(rel));
-  }
-
-  async findAllWithRelations(relations?: string[]): Promise<T[]> {
-    const parsedRelations = this.parseRelations(relations);
-
-    if (!parsedRelations) {
-      return this.repository.find();
-    }
-
-    const entities = await this.repository.find({ relations: parsedRelations });
-
-    if (this.shouldTransformComponents(relations)) {
-      return ComponentService.transformMultipleComponents(entities, this.entityClass, relations);
-    }
-
-    return entities;
-  }
-
-  async findByIdWithRelations(id: number | string, relations?: string[]): Promise<T | null> {
-    const parsedRelations = this.parseRelations(relations);
-
-    if (!parsedRelations) {
-      return this.repository.findOne({
-        where: { id } as FindOptionsWhere<T>,
-      });
-    }
-
-    const entity = await this.repository.findOne({
-      where: { id } as FindOptionsWhere<T>,
-      relations: parsedRelations,
-    });
-
-    if (!entity) return null;
-
-    if (this.shouldTransformComponents(relations)) {
-      return ComponentService.transformComponents(entity, this.entityClass, relations);
-    }
-
-    return entity;
   }
 
   async findAll(options?: FindManyOptions<T>): Promise<T[]> {
@@ -173,5 +78,172 @@ export abstract class BaseService<T extends EntityWithId> {
       where: conditions,
     });
     return count > 0;
+  }
+
+  protected parseRelations(requestedRelations?: string[]): FindOptionsRelations<T> | undefined {
+    if (!requestedRelations || requestedRelations.length === 0) {
+      return undefined;
+    }
+
+    const result: Record<string, boolean | Record<string, unknown>> = {};
+
+    const entityHasComponents = hasComponents(this.entityClass);
+    const componentFields = entityHasComponents ? getComponentFields(this.entityClass) : [];
+    const componentPropertyKeys = entityHasComponents ? getComponentPropertyKeys(this.entityClass) : [];
+
+    let needsComponentsJoin = false;
+
+    for (const relation of requestedRelations) {
+      const isDirectComponent = componentFields.includes(relation) || componentPropertyKeys.includes(relation);
+
+      if (isDirectComponent) {
+        needsComponentsJoin = true;
+        continue;
+      }
+
+      const segments = relation.split('.');
+      const hasNestedComponent = segments.some(
+        segment => componentFields.includes(segment) || componentPropertyKeys.includes(segment),
+      );
+
+      if (hasNestedComponent) {
+        needsComponentsJoin = true;
+
+        const typeormSegments: string[] = [];
+        for (const segment of segments) {
+          if (componentFields.includes(segment) || componentPropertyKeys.includes(segment)) {
+            break;
+          }
+          typeormSegments.push(segment);
+        }
+
+        if (typeormSegments.length > 0) {
+          let current: Record<string, unknown> = result;
+          for (let i = 0; i < typeormSegments.length; i++) {
+            const part = typeormSegments[i];
+            if (!part) continue;
+
+            if (i === typeormSegments.length - 1) {
+              current[part] = current[part] || true;
+            } else {
+              if (typeof current[part] !== 'object' || current[part] === null) {
+                current[part] = {};
+              }
+              current = current[part] as Record<string, unknown>;
+            }
+          }
+        }
+      } else {
+        const parts = relation.split('.');
+        let current: Record<string, unknown> = result;
+
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+
+          if (!part) continue;
+
+          if (i === parts.length - 1) {
+            current[part] = current[part] || true;
+          } else {
+            if (typeof current[part] !== 'object' || current[part] === null) {
+              current[part] = {};
+            }
+            current = current[part] as Record<string, unknown>;
+          }
+        }
+      }
+    }
+
+    if (needsComponentsJoin) {
+      result['components'] = true;
+    }
+
+    return Object.keys(result).length > 0 ? (result as FindOptionsRelations<T>) : undefined;
+  }
+
+  protected shouldTransformComponents(requestedRelations?: string[]): boolean {
+    if (!hasComponents(this.entityClass)) {
+      return false;
+    }
+
+    if (!requestedRelations || requestedRelations.length === 0) {
+      return false;
+    }
+
+    const componentFields = getComponentFields(this.entityClass);
+    const componentPropertyKeys = getComponentPropertyKeys(this.entityClass);
+
+    const hasDirectComponents = requestedRelations.some(
+      rel => componentFields.includes(rel) || componentPropertyKeys.includes(rel),
+    );
+
+    const hasNestedComponents = requestedRelations.some(rel => {
+      const segments = rel.split('.');
+      return segments.some(segment => componentFields.includes(segment) || componentPropertyKeys.includes(segment));
+    });
+
+    return hasDirectComponents || hasNestedComponents;
+  }
+
+  protected hasNestedComponents(requestedRelations?: string[]): boolean {
+    if (!requestedRelations || requestedRelations.length === 0) {
+      return false;
+    }
+
+    const componentFields = hasComponents(this.entityClass) ? getComponentFields(this.entityClass) : [];
+    const componentPropertyKeys = hasComponents(this.entityClass) ? getComponentPropertyKeys(this.entityClass) : [];
+
+    return requestedRelations.some(rel => {
+      const segments = rel.split('.');
+      return (
+        segments.length > 1 &&
+        segments.some(segment => componentFields.includes(segment) || componentPropertyKeys.includes(segment))
+      );
+    });
+  }
+
+  async findAllWithRelations(relations?: string[]): Promise<T[]> {
+    const parsedRelations = this.parseRelations(relations);
+
+    if (!parsedRelations) {
+      return this.repository.find();
+    }
+
+    const entities = await this.repository.find({ relations: parsedRelations });
+
+    if (this.shouldTransformComponents(relations)) {
+      if (this.hasNestedComponents(relations)) {
+        return ComponentService.transformMultipleNestedComponents(entities, this.entityClass, relations);
+      }
+      return ComponentService.transformMultipleComponents(entities, this.entityClass, relations);
+    }
+
+    return entities;
+  }
+
+  async findByIdWithRelations(id: number | string, relations?: string[]): Promise<T | null> {
+    const parsedRelations = this.parseRelations(relations);
+
+    if (!parsedRelations) {
+      return this.repository.findOne({
+        where: { id } as FindOptionsWhere<T>,
+      });
+    }
+
+    const entity = await this.repository.findOne({
+      where: { id } as FindOptionsWhere<T>,
+      relations: parsedRelations,
+    });
+
+    if (!entity) return null;
+
+    if (this.shouldTransformComponents(relations)) {
+      if (this.hasNestedComponents(relations)) {
+        return ComponentService.transformNestedComponents(entity, this.entityClass, relations);
+      }
+      return ComponentService.transformComponents(entity, this.entityClass, relations);
+    }
+
+    return entity;
   }
 }
