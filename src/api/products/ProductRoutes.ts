@@ -5,7 +5,7 @@ import { ValidateBody, ValidateQuery, ValidateParams } from '@middleware/validat
 import { CreateProductDto } from '@/api/products/dtos/CreateProductDto.js';
 import { UpdateProductDto } from '@/api/products/dtos/UpdateProductDto.js';
 import { QueryProductDto } from '@/api/products/dtos/QueryProductDto.js';
-import { ParamIdDto } from '@common/ParamIdDto.js';
+import { ParamIdDto } from '@common/dtos/ParamIdDto.js';
 
 const router: ExpressRouter = Router();
 

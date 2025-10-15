@@ -12,6 +12,7 @@ import { NotFoundError, ValidationError } from '@constants/errors/errors.js';
 import type { NextFunction, Request, Response } from 'express';
 import type { DeepPartial } from 'typeorm';
 import { isValidId } from '@utils/isValidId.js';
+import { parseInclude } from '@utils/parseInclude.js';
 
 export abstract class BaseController<T extends EntityWithId> {
   protected service: BaseService<T>;
@@ -22,9 +23,11 @@ export abstract class BaseController<T extends EntityWithId> {
     this.resourceName = resourceName;
   }
 
-  async findAll(_req: Request, res: Response, next: NextFunction): Promise<void> {
+  async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const resources = await this.service.findAll();
+      const relations = parseInclude(req.query.include);
+      const resources = await this.service.findAllWithRelations(relations);
+
       const response: ApiSuccessResponse<T[]> = {
         message: SUCCESS_RESOURCES_RETRIEVED(this.resourceName),
         data: resources,
@@ -43,7 +46,8 @@ export abstract class BaseController<T extends EntityWithId> {
         throw new ValidationError(ERROR_INVALID_ID);
       }
 
-      const resource = await this.service.findById(Number(id));
+      const relations = parseInclude(req.query.include);
+      const resource = await this.service.findByIdWithRelations(Number(id), relations);
 
       if (!resource) {
         throw new NotFoundError(ERROR_RESOURCE_NOT_FOUND(this.resourceName, id));
