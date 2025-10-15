@@ -85,7 +85,7 @@ export function parseInclude(include: unknown, options: ParseIncludeOptions = {}
   const relations = include
     .split(config.separator)
     .map(relation => relation.trim())
-    .filter(relation => relation.length > 0);
+    .filter(relation => relation && relation.length > 0);
 
   if (relations.length === 0) {
     return undefined;
@@ -138,11 +138,13 @@ export function separateIncludeTypes(
   const components: string[] = [];
 
   for (const relation of relations) {
+    if (!relation) continue;
+
     const rootRelation = relation.split('.')[0];
 
     if (rootRelation && validTypeORMRelations.includes(rootRelation)) {
       typeorm.push(relation);
-    } else {
+    } else if (rootRelation) {
       components.push(relation);
     }
   }

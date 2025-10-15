@@ -83,9 +83,10 @@ export class ComponentService {
       }
 
       if (componentIds.length > 0) {
+        const uniqueIds = [...new Set(componentIds)];
         const repo = AppDataSource.getRepository(meta.entity);
         const components = await repo.find({
-          where: { id: In(componentIds) } as any,
+          where: { id: In(uniqueIds) } as any,
         });
 
         const typeCache = new Map<number, any>();
@@ -131,18 +132,17 @@ export class ComponentService {
     entity: T,
     entityClass: Function,
     requestedRelations?: string[],
-    currentPath: string = '',
   ): Promise<T> {
     if (!requestedRelations || requestedRelations.length === 0) {
       return entity;
     }
 
-    const currentLevelRelations = requestedRelations.filter(rel => !rel.includes('.'));
+    const currentLevelRelations = requestedRelations.filter(rel => rel && !rel.includes('.'));
     if (currentLevelRelations.length > 0) {
       await this.transformComponents(entity, entityClass, currentLevelRelations);
     }
 
-    const nestedRelations = requestedRelations.filter(rel => rel.includes('.'));
+    const nestedRelations = requestedRelations.filter(rel => rel && rel.includes('.'));
 
     for (const relation of nestedRelations) {
       const segments = relation.split('.');
@@ -157,20 +157,12 @@ export class ComponentService {
       if (entityAny[firstSegment]) {
         if (Array.isArray(entityAny[firstSegment])) {
           for (const nestedEntity of entityAny[firstSegment]) {
-            await this.transformNestedComponents(
-              nestedEntity,
-              nestedEntity.constructor,
-              [remainingPath],
-              `${currentPath}${firstSegment}.`,
-            );
+            await this.transformNestedComponents(nestedEntity, nestedEntity.constructor, [remainingPath]);
           }
         } else if (typeof entityAny[firstSegment] === 'object') {
-          await this.transformNestedComponents(
-            entityAny[firstSegment],
-            entityAny[firstSegment].constructor,
-            [remainingPath],
-            `${currentPath}${firstSegment}.`,
-          );
+          await this.transformNestedComponents(entityAny[firstSegment], entityAny[firstSegment].constructor, [
+            remainingPath,
+          ]);
         }
       }
     }
@@ -187,12 +179,12 @@ export class ComponentService {
       return entities;
     }
 
-    const currentLevelRelations = requestedRelations.filter(rel => !rel.includes('.'));
+    const currentLevelRelations = requestedRelations.filter(rel => rel && !rel.includes('.'));
     if (currentLevelRelations.length > 0) {
       await this.transformMultipleComponents(entities, entityClass, currentLevelRelations);
     }
 
-    const nestedRelations = requestedRelations.filter(rel => rel.includes('.'));
+    const nestedRelations = requestedRelations.filter(rel => rel && rel.includes('.'));
 
     for (const relation of nestedRelations) {
       const segments = relation.split('.');
