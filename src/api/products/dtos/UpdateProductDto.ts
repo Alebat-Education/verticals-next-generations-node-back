@@ -19,134 +19,135 @@ import {
   SubjectDataType,
 } from '@enums/product.js';
 import { Verticals, StripeCrm } from '@enums/global.js';
+import { VALIDATION_MESSAGES } from '@constants/errors/validation/messages.js';
 
 export class UpdateProductDto {
-  @IsString({ message: 'Document ID must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Document ID') })
   @IsOptional()
-  @Length(1, 255, { message: 'Document ID must be between 1 and 255 characters' })
+  @Length(1, 255, { message: VALIDATION_MESSAGES.FIELD_LENGTH_BETWEEN('Document ID', 1, 255) })
   documentId?: string;
 
-  @IsString({ message: 'Title must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Title') })
   @IsOptional()
-  @Length(1, 255, { message: 'Title must be between 1 and 255 characters' })
+  @Length(1, 255, { message: VALIDATION_MESSAGES.FIELD_LENGTH_BETWEEN('Title', 1, 255) })
   title?: string;
 
-  @IsEnum(SubjectDataType, { message: 'Subject data must be a valid value' })
+  @IsEnum(SubjectDataType, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Subject data') })
   @IsOptional()
   subjectData?: SubjectDataType;
 
-  @IsString({ message: 'Slug must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Slug') })
   @IsOptional()
-  @Length(1, 255, { message: 'Slug must be between 1 and 255 characters' })
+  @Length(1, 255, { message: VALIDATION_MESSAGES.FIELD_LENGTH_BETWEEN('Slug', 1, 255) })
   slug?: string;
 
-  @IsInt({ message: 'Order must be an integer' })
+  @IsInt({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_INTEGER('Order') })
   @IsOptional()
-  @Min(0, { message: 'Order must be a positive number' })
+  @Min(0, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_POSITIVE('Order') })
   order?: number;
 
-  @IsString({ message: 'SKU must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('SKU') })
   @IsOptional()
-  @Length(1, 100, { message: 'SKU must be between 1 and 100 characters' })
+  @Length(1, 100, { message: VALIDATION_MESSAGES.FIELD_LENGTH_BETWEEN('SKU', 1, 100) })
   SKU?: string;
 
-  @IsArray({ message: 'Vertical must be an array' })
+  @IsArray({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_ARRAY('Vertical') })
   @IsOptional()
-  @ArrayMinSize(1, { message: 'Vertical must contain at least 1 item' })
-  @IsEnum(Verticals, { each: true, message: 'Each vertical must be a valid value' })
+  @ArrayMinSize(1, { message: VALIDATION_MESSAGES.ARRAY_MIN_SIZE('Vertical', 1) })
+  @IsEnum(Verticals, { each: true, message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Each vertical') })
   vertical?: Verticals[];
 
-  @IsEnum(ProductType, { message: 'Product type must be a valid value' })
+  @IsEnum(ProductType, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Product type') })
   @IsOptional()
   type?: ProductType;
 
-  @IsString({ message: 'Stripe ID must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Stripe ID') })
   @IsOptional()
-  @Length(1, 255, { message: 'Stripe ID must be between 1 and 255 characters' })
+  @Length(1, 255, { message: VALIDATION_MESSAGES.FIELD_LENGTH_BETWEEN('Stripe ID', 1, 255) })
   stripeID?: string;
 
-  @IsEnum(StripeCrm, { message: 'Stripe CRM must be a valid value' })
+  @IsEnum(StripeCrm, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Stripe CRM') })
   @IsOptional()
   stripeCrm?: StripeCrm;
 
-  @IsEnum(PurchaseType, { message: 'Purchase type must be a valid value' })
+  @IsEnum(PurchaseType, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Purchase type') })
   @IsOptional()
   purchaseType?: PurchaseType;
 
-  @IsBoolean({ message: 'Enrol button must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Enrol button') })
   @IsOptional()
   enrolButton?: boolean;
 
-  @IsBoolean({ message: 'Form button must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Form button') })
   @IsOptional()
   formButton?: boolean;
 
-  @IsBoolean({ message: 'Is soon must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Is soon') })
   @IsOptional()
   isSoon?: boolean;
 
-  @IsBoolean({ message: 'Instalments price must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Instalments price') })
   @IsOptional()
   instalmentsPrice?: boolean;
 
-  @IsBoolean({ message: 'Contract must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Contract') })
   @IsOptional()
   contract?: boolean;
 
-  @IsEnum(AcronymType, { message: 'Acronym must be a valid value' })
+  @IsEnum(AcronymType, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Acronym') })
   @IsOptional()
   acronym?: AcronymType;
 
-  @IsEnum(PresencialType, { message: 'Presencial type must be a valid value' })
+  @IsEnum(PresencialType, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Presencial type') })
   @IsOptional()
   presencialType?: PresencialType;
 
-  @IsBoolean({ message: 'Limited places must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Limited places') })
   @IsOptional()
   limitedPlaces?: boolean;
 
-  @IsEnum(SubscriptionType, { message: 'Subscription type must be a valid value' })
+  @IsEnum(SubscriptionType, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_ENUM('Subscription type') })
   @IsOptional()
   subscriptionType?: SubscriptionType;
 
-  @IsInt({ message: 'Trial period days must be an integer' })
+  @IsInt({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_INTEGER('Trial period days') })
   @IsOptional()
-  @Min(0, { message: 'Trial period days must be a positive number' })
+  @Min(0, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_POSITIVE('Trial period days') })
   trialPeriodDays?: number;
 
-  @IsString({ message: 'Stripe description must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Stripe description') })
   @IsOptional()
   stripeDescription?: string;
 
-  @IsString({ message: 'Card subscription must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Card subscription') })
   @IsOptional()
   cardSubscription?: string;
 
-  @IsString({ message: 'Syllabus must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Syllabus') })
   @IsOptional()
   syllabus?: string;
 
-  @IsString({ message: 'Presentation must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Presentation') })
   @IsOptional()
   presentation?: string;
 
-  @IsString({ message: 'Objectives must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Objectives') })
   @IsOptional()
   objectives?: string;
 
-  @IsString({ message: 'Directed must be a string' })
+  @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Directed') })
   @IsOptional()
   directed?: string;
 
-  @IsBoolean({ message: 'Has LAAB connection must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Has LAAB connection') })
   @IsOptional()
   hasLaabConnection?: boolean;
 
-  @IsBoolean({ message: 'Is premium must be a boolean' })
+  @IsBoolean({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_BOOLEAN('Is premium') })
   @IsOptional()
   isPremium?: boolean;
 
-  @IsDateString({}, { message: 'Published at must be a valid date' })
+  @IsDateString({}, { message: VALIDATION_MESSAGES.FIELD_MUST_BE_VALID_DATE('Published at') })
   @IsOptional()
   publishedAt?: Date;
 }

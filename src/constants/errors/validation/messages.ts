@@ -14,6 +14,7 @@ export const VALIDATION_MESSAGES = {
   FIELD_MAX_VALUE: (field: string, max: number) => `${field} must be at most ${max}`,
   ARRAY_MIN_SIZE: (field: string, min: number) => `${field} must contain at least ${min} item(s)`,
   FIELD_MUST_BE_POSITIVE: (field: string) => `${field} must be a positive number`,
+  ORDER_DIRECTION_ENUM: 'Order direction must be ASC or DESC',
 } as const;
 
 export const VALIDATION_ERROR_MESSAGES = {
