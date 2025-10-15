@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, JoinColumn } from 'typeorm';
-import { BaseComponentEntity } from '@common/BaseComponentEntity.js';
+import { BaseComponentEntity } from '@common/components/BaseComponentEntity.js';
 import { Product } from '../productModel.js';
 
 @Entity('products_cmps')
