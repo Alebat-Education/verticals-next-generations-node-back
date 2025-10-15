@@ -4,9 +4,6 @@ export abstract class BaseComponentEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ name: 'entity_id', type: 'int', unsigned: true, nullable: false })
-  entityId!: number;
-
   @Column({ name: 'cmp_id', type: 'int', unsigned: true, nullable: false })
   cmpId!: number;
 
