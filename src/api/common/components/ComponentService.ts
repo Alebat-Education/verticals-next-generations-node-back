@@ -27,7 +27,7 @@ export class ComponentService {
     await Promise.all(
       filteredMetadata.map(async (meta: ComponentMetadata) => {
         const componentRecord = (entityAny.components as BaseComponentEntity[]).find(
-          cmp => cmp.field === meta.field && cmp.componentType === meta.componentType,
+          component => component.field === meta.field && component.componentType === meta.componentType,
         );
 
         if (componentRecord) {
@@ -74,7 +74,7 @@ export class ComponentService {
         if (!entityAny.components || entityAny.components.length === 0) continue;
 
         const componentRecord = (entityAny.components as BaseComponentEntity[]).find(
-          cmp => cmp.field === meta.field && cmp.componentType === meta.componentType,
+          component => component.field === meta.field && component.componentType === meta.componentType,
         );
 
         if (componentRecord) {
@@ -90,8 +90,8 @@ export class ComponentService {
         });
 
         const typeCache = new Map<number, any>();
-        components.forEach(comp => {
-          typeCache.set((comp as any).id, comp);
+        components.forEach(component => {
+          typeCache.set((component as any).id, component);
         });
 
         componentCache.set(`${meta.componentType}:${meta.field}`, typeCache);
@@ -108,7 +108,7 @@ export class ComponentService {
 
       for (const meta of filteredMetadata) {
         const componentRecord = (entityAny.components as BaseComponentEntity[]).find(
-          cmp => cmp.field === meta.field && cmp.componentType === meta.componentType,
+          component => component.field === meta.field && component.componentType === meta.componentType,
         );
 
         if (componentRecord) {
