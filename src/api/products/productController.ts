@@ -6,6 +6,7 @@ export class ProductController extends BaseController<Product> {
   constructor() {
     super(productService, MODELS_NAMES.PRODUCT);
   }
+  // specific routes ...
 }
 
 export const productController = new ProductController();

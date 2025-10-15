@@ -7,6 +7,7 @@ Definen los endpoints de la API y conectan las URLs con los controladores. Este 
 - ✅ Crear endpoints HTTP (GET, POST, PUT, DELETE)
 - ✅ Conectar URLs con métodos de controllers
 - ✅ Aplicar middleware (autenticación, validación)
+- ✅ **Validar req.body** con ValidationPipe y DTOs
 - ✅ Organizar la API por módulos
 - ✅ **Auto-registro** mediante `setupRoutes` utility
 
@@ -37,14 +38,17 @@ api/students/
 // api/students/StudentRoutes.ts
 import { Router } from 'express';
 import { studentController } from './studentController.js';
+import { ValidationPipe } from '@middleware/validation-pipe';
+import { CreateStudentDto } from './dtos/CreateStudentDto';
+import { UpdateStudentDto } from './dtos/UpdateStudentDto';
 
 const router = Router();
 
 // ✅ Rutas CRUD base (heredadas de BaseController)
 router.get('/', studentController.findAll.bind(studentController));
 router.get('/:id', studentController.findOne.bind(studentController));
-router.post('/', studentController.create.bind(studentController));
-router.put('/:id', studentController.update.bind(studentController));
+router.post('/', ValidationPipe(CreateStudentDto), studentController.create.bind(studentController));
+router.put('/:id', ValidationPipe(UpdateStudentDto), studentController.update.bind(studentController));
 router.delete('/:id', studentController.delete.bind(studentController));
 
 // ✅ Rutas específicas del módulo
@@ -327,20 +331,35 @@ router.post('/:studentId/courses/:courseId/enroll', studentController.enrollInCo
 ### Rutas con Validación
 
 ```typescript
-import { validateCreateStudent, validateUpdateStudent } from './validators.js';
+import { ValidationPipe } from '@middleware/validation-pipe';
+import { CreateStudentDto } from './dtos/CreateStudentDto';
+import { UpdateStudentDto } from './dtos/UpdateStudentDto';
 
-router.post('/', validateCreateStudent, studentController.create.bind(studentController));
+// ✅ Rutas públicas (sin validación)
+router.get('/', studentController.findAll.bind(studentController));
+router.get('/:id', studentController.findOne.bind(studentController));
 
-router.put('/:id', validateUpdateStudent, studentController.update.bind(studentController));
+// ✅ Rutas con validación de body usando DTOs
+router.post('/', ValidationPipe(CreateStudentDto), studentController.create.bind(studentController));
+router.put('/:id', ValidationPipe(UpdateStudentDto), studentController.update.bind(studentController));
+router.patch('/:id', ValidationPipe(UpdateStudentDto), studentController.update.bind(studentController));
 ```
+
+**Notas importantes:**
+
+- ✅ **ValidationPipe(Dto)** - Aplica en rutas que reciben body (POST/PUT/PATCH)
+- ✅ **DTOs** - Crear en carpeta `dtos/` para validar estructura de datos
+- ✅ **Rutas GET** - Mantener públicas salvo que requieran validación de query params
+- ✅ **Autenticación** - Combinar con `validateToken` si es necesario
 
 ## Resumen
 
 1. ✅ **Crear archivo** `{Module}Routes.ts` en `api/{module}/`
 2. ✅ **Usar BaseController** para heredar rutas CRUD
 3. ✅ **Usar .bind()** al asignar métodos a rutas
-4. ✅ **Export default** el router
-5. ✅ **setupRoutes** lo registra automáticamente
-6. ✅ **Naming**: `StudentRoutes.ts` → `/api/students`
-7. ✅ **Middleware**: Aplicar según necesidad (auth, validation)
-8. ✅ **No importar manualmente** - el sistema busca archivos `*Routes.ts`
+4. ✅ **Validar body** con `ValidationPipe(Dto)` en POST/PUT/PATCH
+5. ✅ **Export default** el router
+6. ✅ **setupRoutes** lo registra automáticamente
+7. ✅ **Naming**: `StudentRoutes.ts` → `/api/students`
+8. ✅ **Middleware**: Aplicar según necesidad (auth, validation)
+9. ✅ **No importar manualmente** - el sistema busca archivos `*Routes.ts`

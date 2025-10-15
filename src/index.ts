@@ -3,7 +3,7 @@ import { verifyPortAvailable } from '@utils/verifyPort.js';
 import app from '@/app.js';
 import { CONFIG } from '@config/index.js';
 import { SERVER_MESSAGES } from '@constants/common/server.js';
-import { ERROR, ERROR_SERVER } from '@constants/errors/server.js';
+import { ERROR, ERROR_SERVER } from '@errors/server.js';
 import { initDB } from '@config/connection.js';
 import { setupRoutes } from '@utils/setupRoutes.js';
 import { globalErrorHandler } from '@middleware/errorHandler.js';

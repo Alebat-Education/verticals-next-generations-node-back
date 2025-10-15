@@ -1,7 +1,8 @@
 import { plainToInstance } from 'class-transformer';
 import { validate, type ValidationError as ClassValidatorError } from 'class-validator';
 import type { Response, NextFunction } from 'express';
-import { VALIDATION_ERROR_MESSAGES, VALIDATION_TYPES, VALIDATION_OPTIONS } from '@constants/errors/validation/index.js';
+import { VALIDATION_ERROR_MESSAGES } from '@errors/validation/messages.js';
+import { VALIDATION_TYPES, VALIDATION_OPTIONS } from '@errors/validation/rules.js';
 import { ValidationError, InternalServerError } from '@errors/errors.js';
 import type {
   ValidationPipeOptions,
