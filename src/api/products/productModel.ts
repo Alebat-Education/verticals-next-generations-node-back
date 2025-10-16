@@ -1,4 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, Index } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Index,
+  OneToMany,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import {
   ProductType,
   PurchaseType,
@@ -8,6 +18,11 @@ import {
   SubjectDataType,
 } from '@enums/product.js';
 import { Verticals, StripeCrm } from '@enums/global.js';
+import { StrapiComponent } from '@decorators/StrapiComponent.js';
+import { ProductComponent } from './components/ProductComponent.js';
+import { FullPriceComponent } from './components/FullPriceComponent.js';
+import { CardTagsComponent } from '@api/products/components/CardTagsComponent.js';
+import { Category } from '@api/categories/categoryModel.js';
 
 @Entity('products')
 export class Product {
@@ -113,5 +128,30 @@ export class Product {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt!: Date;
 
-  // ...
+  @ManyToMany(() => Category, category => category.products)
+  @JoinTable({
+    name: 'categories_product_lnk',
+    joinColumn: { name: 'product_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'category_id', referencedColumnName: 'id' },
+  })
+  categories!: Category[];
+
+  @OneToMany(() => ProductComponent, component => component.product, { eager: false })
+  components!: ProductComponent[];
+
+  @StrapiComponent({
+    field: 'fullPrice',
+    componentType: 'products.full-price',
+    entity: FullPriceComponent,
+    tableName: 'components_products_full_prices',
+  })
+  fullPrice?: FullPriceComponent | null;
+
+  @StrapiComponent({
+    field: 'cardTags',
+    componentType: 'cards.card-tags',
+    entity: CardTagsComponent,
+    tableName: 'components_cards_card_tags',
+  })
+  cardTags?: CardTagsComponent | null;
 }
