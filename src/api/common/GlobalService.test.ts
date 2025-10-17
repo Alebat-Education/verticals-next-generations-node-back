@@ -16,6 +16,16 @@ class TestService extends BaseService<TestEntity> {
   }
 }
 
+const UPDATE_RESULT_SUCCESS = { affected: 1, raw: {}, generatedMaps: [] };
+const UPDATE_RESULT_NOT_FOUND = { affected: 0, raw: {}, generatedMaps: [] };
+const DELETE_RESULT_SUCCESS = { affected: 1, raw: {} };
+const DELETE_RESULT_NOT_FOUND = { affected: 0, raw: {} };
+const QUERY_OPTIONS_PAGINATION = { take: 10, skip: 0 };
+const COUNT_RESULT_EXISTS = 1;
+const COUNT_RESULT_NOT_EXISTS = 0;
+const COUNT_RESULT_MULTIPLE = 10;
+const COUNT_RESULT_FILTERED = 5;
+
 describe(TITLES.BASE_SERVICES, () => {
   let service: TestService;
   let mockRepository: MockRepository;
@@ -36,12 +46,11 @@ describe(TITLES.BASE_SERVICES, () => {
     });
 
     it(SUBTITLES.FIND_ALL_WITH_OPTIONS, async () => {
-      const options = { take: 10, skip: 0 };
       mockRepository.find.mockResolvedValue(mockServiceTestData.multipleEntities);
 
-      const result = await service.findAll(options);
+      const result = await service.findAll(QUERY_OPTIONS_PAGINATION);
 
-      expect(mockRepository.find).toHaveBeenCalledWith(options);
+      expect(mockRepository.find).toHaveBeenCalledWith(QUERY_OPTIONS_PAGINATION);
       expect(result).toEqual(mockServiceTestData.multipleEntities);
     });
   });
@@ -111,7 +120,7 @@ describe(TITLES.BASE_SERVICES, () => {
 
   describe(TITLES.UPDATE, () => {
     it(SUBTITLES.UPDATE_ENTITY, async () => {
-      mockRepository.update.mockResolvedValue({ affected: 1, raw: {}, generatedMaps: [] });
+      mockRepository.update.mockResolvedValue(UPDATE_RESULT_SUCCESS);
       mockRepository.findOne.mockResolvedValue(mockServiceTestData.updatedEntity);
 
       const result = await service.update(TEST_SERVICE_IDS.VALID, mockServiceTestData.updateData);
@@ -124,7 +133,7 @@ describe(TITLES.BASE_SERVICES, () => {
     });
 
     it(SUBTITLES.UPDATE_NOT_FOUND, async () => {
-      mockRepository.update.mockResolvedValue({ affected: 0, raw: {}, generatedMaps: [] });
+      mockRepository.update.mockResolvedValue(UPDATE_RESULT_NOT_FOUND);
       mockRepository.findOne.mockResolvedValue(null);
 
       const result = await service.update(TEST_SERVICE_IDS.NOT_FOUND, mockServiceTestData.updateData);
@@ -135,7 +144,7 @@ describe(TITLES.BASE_SERVICES, () => {
 
   describe(TITLES.DELETE, () => {
     it(SUBTITLES.DELETE_ENTITY, async () => {
-      mockRepository.delete.mockResolvedValue({ affected: 1, raw: {} });
+      mockRepository.delete.mockResolvedValue(DELETE_RESULT_SUCCESS);
 
       const result = await service.delete(TEST_SERVICE_IDS.VALID);
 
@@ -144,7 +153,7 @@ describe(TITLES.BASE_SERVICES, () => {
     });
 
     it(SUBTITLES.DELETE_NOT_FOUND, async () => {
-      mockRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
+      mockRepository.delete.mockResolvedValue(DELETE_RESULT_NOT_FOUND);
 
       const result = await service.delete(TEST_SERVICE_IDS.NOT_FOUND);
 
@@ -155,7 +164,7 @@ describe(TITLES.BASE_SERVICES, () => {
 
   describe(TITLES.EXISTS, () => {
     it(SUBTITLES.EXISTS_TRUE, async () => {
-      mockRepository.count.mockResolvedValue(1);
+      mockRepository.count.mockResolvedValue(COUNT_RESULT_EXISTS);
 
       const result = await service.exists(TEST_SERVICE_IDS.VALID);
 
@@ -166,7 +175,7 @@ describe(TITLES.BASE_SERVICES, () => {
     });
 
     it(SUBTITLES.EXISTS_FALSE, async () => {
-      mockRepository.count.mockResolvedValue(0);
+      mockRepository.count.mockResolvedValue(COUNT_RESULT_NOT_EXISTS);
 
       const result = await service.exists(TEST_SERVICE_IDS.NOT_FOUND);
 
@@ -179,7 +188,7 @@ describe(TITLES.BASE_SERVICES, () => {
 
   describe(TITLES.EXISTS_BY, () => {
     it(SUBTITLES.EXISTS_BY_TRUE, async () => {
-      mockRepository.count.mockResolvedValue(1);
+      mockRepository.count.mockResolvedValue(COUNT_RESULT_EXISTS);
 
       const result = await service.existsBy(TEST_CONDITIONS.BY_NAME);
 
@@ -190,7 +199,7 @@ describe(TITLES.BASE_SERVICES, () => {
     });
 
     it(SUBTITLES.EXISTS_BY_FALSE, async () => {
-      mockRepository.count.mockResolvedValue(0);
+      mockRepository.count.mockResolvedValue(COUNT_RESULT_NOT_EXISTS);
 
       const result = await service.existsBy(TEST_CONDITIONS.BY_NAME);
 
@@ -203,23 +212,23 @@ describe(TITLES.BASE_SERVICES, () => {
 
   describe(TITLES.COUNT, () => {
     it(SUBTITLES.COUNT_ALL, async () => {
-      mockRepository.count.mockResolvedValue(10);
+      mockRepository.count.mockResolvedValue(COUNT_RESULT_MULTIPLE);
 
       const result = await service.count();
 
       expect(mockRepository.count).toHaveBeenCalledWith({});
-      expect(result).toBe(10);
+      expect(result).toBe(COUNT_RESULT_MULTIPLE);
     });
 
     it(SUBTITLES.COUNT_BY_CONDITIONS, async () => {
-      mockRepository.count.mockResolvedValue(5);
+      mockRepository.count.mockResolvedValue(COUNT_RESULT_FILTERED);
 
       const result = await service.count(TEST_CONDITIONS.BY_NAME);
 
       expect(mockRepository.count).toHaveBeenCalledWith({
         where: TEST_CONDITIONS.BY_NAME,
       });
-      expect(result).toBe(5);
+      expect(result).toBe(COUNT_RESULT_FILTERED);
     });
   });
 
