@@ -5,7 +5,7 @@ import { logger } from '@config/logger.js';
 
 export async function setupRoutes(app: Express): Promise<void> {
   const PRODUCTION_ROUTES = {
-    PRODUCTS: () => import('@/api/products/productsRoutes.js'),
+    PRODUCTS: () => import('@/api/products/productRoutes.js'),
 
     // Add more routes here as needed
   };
