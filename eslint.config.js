@@ -100,6 +100,35 @@ export default [
     },
   },
   {
+    files: ['scripts/**/*.ts'],
+    languageOptions: {
+      parser: parserTypeScript,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './scripts/tsconfig.json',
+      },
+    },
+    plugins: {
+      prettier: pluginPrettier,
+      '@typescript-eslint': pluginTypeScript,
+    },
+    rules: {
+      'prettier/prettier': 'error',
+      'no-console': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'after-used',
+          ignoreRestSiblings: true,
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
+  {
     files: ['commitlint.config.ts'],
     languageOptions: {
       parser: parserTypeScript,
