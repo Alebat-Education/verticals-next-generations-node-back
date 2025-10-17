@@ -14,11 +14,15 @@ import type { DeepPartial } from 'typeorm';
 import { isValidId } from '@utils/isValidId.js';
 import { parseInclude } from '@utils/parseInclude.js';
 
-export abstract class BaseController<T extends EntityWithId> {
-  protected service: BaseService<T>;
+export abstract class BaseController<
+  T extends EntityWithId,
+  CreateEntityDTO extends DeepPartial<T>,
+  UpdateEntityDTO extends DeepPartial<T>,
+> {
+  protected service: BaseService<T, CreateEntityDTO, UpdateEntityDTO>;
   protected resourceName: string;
 
-  constructor(service: BaseService<T>, resourceName: string) {
+  constructor(service: BaseService<T, CreateEntityDTO, UpdateEntityDTO>, resourceName: string) {
     this.service = service;
     this.resourceName = resourceName;
   }
@@ -65,7 +69,7 @@ export abstract class BaseController<T extends EntityWithId> {
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const data: DeepPartial<T> = req.body;
+      const data: CreateEntityDTO = req.body as CreateEntityDTO;
       const resource = await this.service.create(data);
 
       const response: ApiSuccessResponse<T> = {
@@ -81,7 +85,7 @@ export abstract class BaseController<T extends EntityWithId> {
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const data: DeepPartial<T> = req.body;
+      const data: UpdateEntityDTO = req.body as UpdateEntityDTO;
 
       if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);
