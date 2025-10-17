@@ -10,10 +10,15 @@ import { ERROR_INVALID_ID, ERROR_RESOURCE_NOT_FOUND } from '@constants/errors/co
 import type { ApiSuccessResponse } from '@interfaces/http.js';
 import { NotFoundError, ValidationError } from '@constants/errors/errors.js';
 import type { NextFunction, Request, Response } from 'express';
+import type { DeepPartial } from 'typeorm';
 import { isValidId } from '@utils/isValidId.js';
 import { parseInclude } from '@utils/parseInclude.js';
 
-export abstract class BaseController<T extends EntityWithId, CreateEntityDTO, UpdateEntityDTO> {
+export abstract class BaseController<
+  T extends EntityWithId,
+  CreateEntityDTO extends DeepPartial<T>,
+  UpdateEntityDTO extends DeepPartial<T>,
+> {
   protected service: BaseService<T, CreateEntityDTO, UpdateEntityDTO>;
   protected resourceName: string;
 

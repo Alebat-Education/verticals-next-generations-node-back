@@ -15,8 +15,8 @@ export interface EntityWithId {
 
 export abstract class BaseService<
   T extends EntityWithId,
-  CreateEntityDTO = DeepPartial<T>,
-  UpdateEntityDTO = DeepPartial<T>,
+  CreateEntityDTO extends DeepPartial<T> = DeepPartial<T>,
+  UpdateEntityDTO extends DeepPartial<T> = DeepPartial<T>,
 > {
   protected readonly repository: Repository<T>;
   protected readonly entityClass: Function;
@@ -52,7 +52,7 @@ export abstract class BaseService<
   }
 
   async create(data: CreateEntityDTO): Promise<T> {
-    const entity = this.repository.create(data as DeepPartial<T>);
+    const entity = this.repository.create(data);
     return this.repository.save(entity);
   }
 
