@@ -16,8 +16,8 @@ import { parseInclude } from '@utils/parseInclude.js';
 
 export abstract class BaseController<
   T extends EntityWithId,
-  CreateEntityDTO extends DeepPartial<T>,
-  UpdateEntityDTO extends DeepPartial<T>,
+  CreateEntityDTO extends DeepPartial<T> = DeepPartial<T>,
+  UpdateEntityDTO extends DeepPartial<T> = DeepPartial<T>,
 > {
   protected service: BaseService<T, CreateEntityDTO, UpdateEntityDTO>;
   protected resourceName: string;
