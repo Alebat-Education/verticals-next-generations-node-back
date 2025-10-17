@@ -9,8 +9,13 @@ import {
   createMockNext,
   type MockService,
 } from '@tests/helpers/mockFactories.js';
-import { mockTestData, TEST_IDS, TEST_RELATIONS, type TestEntity } from './GlobalController.fixtures.js';
-import { SUBTITLES, TITLES } from '@tests/helpers/messages.js';
+import {
+  mockTestData,
+  TEST_IDS,
+  TEST_RELATIONS,
+  type TestEntity,
+} from '../../constants/tests/GlobalControllerDataTest.js';
+import { SUBTITLES, TITLES } from '@constants/tests/messages.js';
 import { ERROR_DATABASE_GENERIC } from '@errors/server.js';
 
 class TestController extends BaseController<TestEntity> {

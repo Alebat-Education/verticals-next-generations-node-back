@@ -7,8 +7,8 @@ import {
   TEST_CONDITIONS,
   TEST_SERVICE_RELATIONS,
   type TestEntity,
-} from './GlobalService.fixtures.js';
-import { TITLES, SUBTITLES } from '@tests/helpers/messages.js';
+} from '../../constants/tests/GlobalServiceDataTest.js';
+import { TITLES, SUBTITLES } from '@constants/tests/messages.js';
 
 class TestService extends BaseService<TestEntity> {
   constructor(repository: Repository<TestEntity>) {
