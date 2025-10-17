@@ -1,10 +1,22 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import pino from 'pino';
 import * as FILES from './templates.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const logger = pino({
+  transport: {
+    target: 'pino-pretty',
+    options: {
+      colorize: true,
+      ignore: 'pid,hostname',
+      translateTime: 'SYS:standard',
+    },
+  },
+});
 
 interface GeneratorOptions {
   resourceName: string;
@@ -18,9 +30,9 @@ const args = process.argv.slice(2);
 const resourceNameInput = args[0];
 
 if (!resourceNameInput) {
-  console.error('❌ Error: Resource name is required');
-  console.log('Usage: pnpm generate:resource <resource-name>');
-  console.log('Example: pnpm generate:resource user');
+  logger.error('Resource name is required');
+  logger.info('Usage: pnpm generate:resource <resource-name>');
+  logger.info('Example: pnpm generate:resource user');
   process.exit(1);
 }
 
@@ -63,12 +75,8 @@ class FileWriter {
   }
 
   static async writeFile(filePath: string, content: string): Promise<void> {
-    try {
-      await fs.writeFile(filePath, content.trim(), 'utf-8');
-      console.log(`✅ Created: ${filePath}`);
-    } catch (error) {
-      throw new Error(`Error writing file ${filePath}: ${error}`);
-    }
+    await fs.writeFile(filePath, content.trim(), 'utf-8');
+    logger.info(`Created: ${filePath}`);
   }
 
   static async fileExists(filePath: string): Promise<boolean> {
@@ -95,39 +103,26 @@ export class ResourceGenerator {
   }
 
   async generate(): Promise<void> {
-    console.log(`\n🚀 Generating resource: ${this.resourceName}\n`);
+    logger.info(`Generating resource: ${this.resourceName}`);
 
     try {
-      if (!this.options.skipController) {
-        await this.generateController();
-      }
-
-      if (!this.options.skipService) {
-        await this.generateService();
-      }
-
-      if (!this.options.skipRoutes) {
-        await this.generateRoutes();
-      }
-
-      if (!this.options.skipEntity) {
-        await this.generateEntity();
-      }
+      if (!this.options.skipController) await this.generateController();
+      if (!this.options.skipService) await this.generateService();
+      if (!this.options.skipRoutes) await this.generateRoutes();
+      if (!this.options.skipEntity) await this.generateEntity();
 
       await this.updateSetupRoutes();
       await this.updateModelsConstants();
 
-      console.log('\n✨ Resource generated successfully!\n');
-      console.log('📝 Next steps:');
-      console.log(
-        `   1. Review and customize the entity in src/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.ts`,
-      );
-      console.log(`   2. Verify the route registration in src/utils/setupRoutes.ts`);
-      console.log(`   3. Verify the model import in src/constants/common/models.ts`);
-      console.log(`   4. Create DTOs in src/api/${this.resourceNamePlural}/dtos/ if needed`);
-      console.log(`   5. Run migrations if needed\n`);
+      logger.info('Resource generated successfully!');
+      logger.info('Next steps:');
+      logger.info(`  1. Review entity: src/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.ts`);
+      logger.info(`  2. Verify routes: src/utils/setupRoutes.ts`);
+      logger.info(`  3. Verify models: src/constants/common/models.ts`);
+      logger.info(`  4. Create DTOs: src/api/${this.resourceNamePlural}/dtos/`);
+      logger.info(`  5. Run migrations if needed`);
     } catch (error) {
-      console.error('❌ Error generating resource:', error);
+      logger.error({ err: error }, 'Error generating resource');
       process.exit(1);
     }
   }
@@ -137,7 +132,7 @@ export class ResourceGenerator {
     const controllerPath = path.join(resourceDir, `${this.resourceNameLower}Controller.ts`);
 
     if (await FileWriter.fileExists(controllerPath)) {
-      console.log(`⚠️  Controller already exists: ${controllerPath}`);
+      logger.warn(`Controller already exists: ${controllerPath}`);
       return;
     }
 
@@ -153,7 +148,7 @@ export class ResourceGenerator {
     const servicePath = path.join(resourceDir, `${this.resourceNameLower}Service.ts`);
 
     if (await FileWriter.fileExists(servicePath)) {
-      console.log(`⚠️  Service already exists: ${servicePath}`);
+      logger.warn(`Service already exists: ${servicePath}`);
       return;
     }
 
@@ -169,7 +164,7 @@ export class ResourceGenerator {
     const routesPath = path.join(resourceDir, `${this.resourceNameLower}Routes.ts`);
 
     if (await FileWriter.fileExists(routesPath)) {
-      console.log(`⚠️  Routes already exist: ${routesPath}`);
+      logger.warn(`Routes already exist: ${routesPath}`);
       return;
     }
 
@@ -185,7 +180,7 @@ export class ResourceGenerator {
     const entityPath = path.join(resourceDir, `${this.resourceNameLower}Model.ts`);
 
     if (await FileWriter.fileExists(entityPath)) {
-      console.log(`⚠️  Entity already exists: ${entityPath}`);
+      logger.warn(`Entity already exists: ${entityPath}`);
       return;
     }
 
@@ -197,38 +192,39 @@ export class ResourceGenerator {
     const setupRoutesPath = path.join(this.baseDir, 'utils', 'setupRoutes.ts');
 
     if (!(await FileWriter.fileExists(setupRoutesPath))) {
-      console.log(`⚠️  setupRoutes.ts not found, skipping route registration`);
+      logger.warn('setupRoutes.ts not found, skipping route registration');
       return;
     }
 
     try {
       const content = await fs.readFile(setupRoutesPath, 'utf-8');
-
       const routeKey = this.resourceName.toUpperCase();
+
       if (content.includes(`${routeKey}:`)) {
-        console.log(`ℹ️  Route ${routeKey} already exists in setupRoutes.ts`);
+        logger.info(`Route ${routeKey} already exists in setupRoutes.ts`);
         return;
       }
 
       const routeImport = `${routeKey}: () => import('@/api/${this.resourceNamePlural}/${this.resourceNameLower}Routes.js'),`;
+      const pathEntry = `${routeKey}: '/${this.resourceNamePlural}',`;
+      const appUse = `app.use(PATHS.${routeKey}, (await PRODUCTION_ROUTES.${routeKey}()).default);`;
+
       const updatedRoutes = content.replace(
         /(const PRODUCTION_ROUTES = \{[\s\S]*?)(\/\/ Add more routes here as needed)/,
         `$1    ${routeImport}\n    $2`,
       );
 
-      const pathEntry = `${routeKey}: '/${this.resourceNamePlural}',`;
       const updatedPaths = updatedRoutes.replace(
         /(const PATHS = \{[\s\S]*?)(\/\/ Add more paths here as needed)/,
         `$1    ${pathEntry}\n    $2`,
       );
 
-      const appUse = `app.use(PATHS.${routeKey}, (await PRODUCTION_ROUTES.${routeKey}()).default);`;
       const finalContent = updatedPaths.replace(/(try \{[\s\S]*?app\.use\(PATHS\.\w+[^;]*\);)/, `$1\n    ${appUse}`);
 
       await fs.writeFile(setupRoutesPath, finalContent, 'utf-8');
-      console.log(`✅ Updated: ${setupRoutesPath}`);
+      logger.info(`Updated: ${setupRoutesPath}`);
     } catch (error) {
-      console.error(`⚠️  Error updating setupRoutes.ts: ${error}`);
+      logger.error({ err: error }, 'Error updating setupRoutes.ts');
     }
   }
 
@@ -236,7 +232,7 @@ export class ResourceGenerator {
     const modelsConstantsPath = path.join(this.baseDir, 'constants', 'common', 'models.ts');
 
     if (!(await FileWriter.fileExists(modelsConstantsPath))) {
-      console.log(`⚠️  models.ts not found, skipping model registration`);
+      logger.warn('models.ts not found, skipping model registration');
       return;
     }
 
@@ -244,11 +240,14 @@ export class ResourceGenerator {
       const content = await fs.readFile(modelsConstantsPath, 'utf-8');
 
       if (content.includes(`from '@/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.js'`)) {
-        console.log(`ℹ️  Model ${this.resourceName} already imported in models.ts`);
+        logger.info(`Model ${this.resourceName} already imported in models.ts`);
         return;
       }
 
       const importStatement = `import { ${this.resourceName} } from '@/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.js';`;
+      const modelNameKey = this.resourceName.toUpperCase();
+      const modelNameEntry = `  ${modelNameKey}: '${this.resourceName}',`;
+
       const updatedImports = content.replace(
         /(import.*?;\n)(\nexport const EXPORTED_MODELS)/,
         `$1${importStatement}\n$2`,
@@ -259,17 +258,15 @@ export class ResourceGenerator {
         `$1$2, ${this.resourceName}$3`,
       );
 
-      const modelNameKey = this.resourceName.toUpperCase();
-      const modelNameEntry = `  ${modelNameKey}: '${this.resourceName}',`;
       const finalContent = updatedExports.replace(
         /(export const MODELS_NAMES = \{[\s\S]*?)(} as const;)/,
         `$1${modelNameEntry}\n$2`,
       );
 
       await fs.writeFile(modelsConstantsPath, finalContent, 'utf-8');
-      console.log(`✅ Updated: ${modelsConstantsPath}`);
+      logger.info(`Updated: ${modelsConstantsPath}`);
     } catch (error) {
-      console.error(`⚠️  Error updating models.ts: ${error}`);
+      logger.error({ err: error }, 'Error updating models.ts');
     }
   }
 }
