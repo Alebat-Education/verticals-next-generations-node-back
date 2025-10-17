@@ -1,4 +1,4 @@
-export const CONTROLLER_TEMPLATE = (resourceName: string, resourceNameLower: string, resourceNamePlural: string) => `
+export const CONTROLLER_TEMPLATE = (resourceName: string, resourceNameLower: string, resourceNamePlural = '') => `
 import { BaseController } from '@common/GlobalController.js';
 import { MODELS_NAMES } from '@constants/common/models.js';
 import { ${resourceNameLower}Service } from '@/api/${resourceNamePlural}/${resourceNameLower}Service.js';
@@ -14,7 +14,7 @@ export class ${resourceName}Controller extends BaseController<${resourceName}> {
 export const ${resourceNameLower}Controller = new ${resourceName}Controller();
 `;
 
-export const SERVICE_TEMPLATE = (resourceName: string, resourceNameLower: string, resourceNamePlural: string) => `
+export const SERVICE_TEMPLATE = (resourceName: string, resourceNameLower: string, resourceNamePlural = '') => `
 import { BaseService } from '@common/GlobalService.js';
 import { AppDataSource } from '@config/connection.js';
 import { ERROR_DATA_SOURCE_NOT_INITIALIZED } from '@constants/errors/server.js';
@@ -33,7 +33,7 @@ class ${resourceName}Service extends BaseService<${resourceName}> {
 
 export const ${resourceNameLower}Service = new ${resourceName}Service();`;
 
-export const ROUTES_TEMPLATE = (resourceName: string, resourceNameLower: string, resourceNamePlural: string) => `
+export const ROUTES_TEMPLATE = (resourceName: string, resourceNameLower: string, resourceNamePlural = '') => `
 import type { Router as ExpressRouter } from 'express';
 import { Router } from 'express';
 import { ValidateParams } from '@middleware/validation-pipe.js';
@@ -64,7 +64,7 @@ router.get('/:id', ValidateParams(ParamIdDto), (req, res, next) => ${resourceNam
 export default router;
 `;
 
-export const MODEL_TEMPLATE = (resourceName: string, resourceNameLower: string) => `
+export const MODEL_TEMPLATE = (resourceName: string, resourceNameLower: string, _resourceNamePlural?: string) => `
 import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

@@ -56,22 +56,14 @@ const toCamelCase = (str: string): string => {
 };
 
 const toPlural = (str: string): string => {
-  if (str.endsWith('s') || str.endsWith('x') || str.endsWith('z')) {
-    return `${str}es`;
-  }
-  if (str.endsWith('y') && !/[aeiou]y$/.test(str)) {
-    return `${str.slice(0, -1)}ies`;
-  }
+  if (str.endsWith('s') || str.endsWith('x') || str.endsWith('z')) return `${str}es`;
+  if (str.endsWith('y') && !/[aeiou]y$/.test(str)) return `${str.slice(0, -1)}ies`;
   return `${str}s`;
 };
 
 class FileWriter {
   static async createDirectory(dirPath: string): Promise<void> {
-    try {
-      await fs.mkdir(dirPath, { recursive: true });
-    } catch (error) {
-      throw new Error(`Error creating directory ${dirPath}: ${error}`);
-    }
+    await fs.mkdir(dirPath, { recursive: true });
   }
 
   static async writeFile(filePath: string, content: string): Promise<void> {
@@ -105,10 +97,10 @@ export class ResourceGenerator {
     logger.info(`Generating resource: ${this.resourceName}`);
 
     try {
-      if (!this.options.skipController) await this.generateController();
-      if (!this.options.skipService) await this.generateService();
-      if (!this.options.skipRoutes) await this.generateRoutes();
-      if (!this.options.skipEntity) await this.generateEntity();
+      if (!this.options.skipController) await this.generateFile('Controller', FILES.CONTROLLER_TEMPLATE);
+      if (!this.options.skipService) await this.generateFile('Service', FILES.SERVICE_TEMPLATE);
+      if (!this.options.skipRoutes) await this.generateFile('Routes', FILES.ROUTES_TEMPLATE);
+      if (!this.options.skipEntity) await this.generateFile('Model', FILES.MODEL_TEMPLATE);
 
       await this.updateSetupRoutes();
       await this.updateModelsConstants();
@@ -126,65 +118,21 @@ export class ResourceGenerator {
     }
   }
 
-  private async generateController(): Promise<void> {
+  private async generateFile(
+    type: string,
+    template: (name: string, nameLower: string, namePlural?: string) => string,
+  ): Promise<void> {
     const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
-    const controllerPath = path.join(resourceDir, `${this.resourceNameLower}Controller.ts`);
+    const filePath = path.join(resourceDir, `${this.resourceNameLower}${type}.ts`);
 
-    if (await FileWriter.fileExists(controllerPath)) {
-      logger.warn(`Controller already exists: ${controllerPath}`);
+    if (await FileWriter.fileExists(filePath)) {
+      logger.warn(`${type} already exists`);
       return;
     }
 
     await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(
-      controllerPath,
-      FILES.CONTROLLER_TEMPLATE(this.resourceName, this.resourceNameLower, this.resourceNamePlural),
-    );
-  }
-
-  private async generateService(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
-    const servicePath = path.join(resourceDir, `${this.resourceNameLower}Service.ts`);
-
-    if (await FileWriter.fileExists(servicePath)) {
-      logger.warn(`Service already exists: ${servicePath}`);
-      return;
-    }
-
-    await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(
-      servicePath,
-      FILES.SERVICE_TEMPLATE(this.resourceName, this.resourceNameLower, this.resourceNamePlural),
-    );
-  }
-
-  private async generateRoutes(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
-    const routesPath = path.join(resourceDir, `${this.resourceNameLower}Routes.ts`);
-
-    if (await FileWriter.fileExists(routesPath)) {
-      logger.warn(`Routes already exist: ${routesPath}`);
-      return;
-    }
-
-    await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(
-      routesPath,
-      FILES.ROUTES_TEMPLATE(this.resourceName, this.resourceNameLower, this.resourceNamePlural),
-    );
-  }
-
-  private async generateEntity(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
-    const entityPath = path.join(resourceDir, `${this.resourceNameLower}Model.ts`);
-
-    if (await FileWriter.fileExists(entityPath)) {
-      logger.warn(`Entity already exists: ${entityPath}`);
-      return;
-    }
-
-    await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(entityPath, FILES.MODEL_TEMPLATE(this.resourceName, this.resourceNameLower));
+    const content = template(this.resourceName, this.resourceNameLower, this.resourceNamePlural);
+    await FileWriter.writeFile(filePath, content);
   }
 
   private async updateSetupRoutes(): Promise<void> {
