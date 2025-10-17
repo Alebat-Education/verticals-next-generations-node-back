@@ -4,8 +4,13 @@ import { fileURLToPath } from 'url';
 import pino from 'pino';
 import * as FILES from './templates.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+interface GeneratorOptions {
+  resourceName: string;
+  skipController?: boolean;
+  skipService?: boolean;
+  skipRoutes?: boolean;
+  skipEntity?: boolean;
+}
 
 const logger = pino({
   transport: {
@@ -17,25 +22,16 @@ const logger = pino({
     },
   },
 });
-
-interface GeneratorOptions {
-  resourceName: string;
-  skipController?: boolean;
-  skipService?: boolean;
-  skipRoutes?: boolean;
-  skipEntity?: boolean;
-}
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const args = process.argv.slice(2);
 const resourceNameInput = args[0];
-
 if (!resourceNameInput) {
   logger.error('Resource name is required');
-  logger.info('Usage: pnpm generate:resource <resource-name>');
+  logger.info('Usage: pnpm generate:resource <resource-name (singular form)>');
   logger.info('Example: pnpm generate:resource user');
   process.exit(1);
 }
-
 const resourceName = resourceNameInput.toLowerCase();
 
 const toPascalCase = (str: string): string => {
@@ -166,7 +162,10 @@ export class ResourceGenerator {
         `$1    ${pathEntry}\n    $2`,
       );
 
-      const finalContent = updatedPaths.replace(/(try \{[\s\S]*?app\.use\(PATHS\.\w+[^;]*\);)/, `$1\n    ${appUse}`);
+      const finalContent = updatedPaths.replace(
+        /(app\.use\(PATHS\.\w+[^;]*\);\s*)(\n\s*\} catch|$)/,
+        `$1\n    ${appUse}$2`,
+      );
 
       await fs.writeFile(setupRoutesPath, finalContent, 'utf-8');
     } catch (error) {
@@ -195,13 +194,13 @@ export class ResourceGenerator {
       const modelNameEntry = `  ${modelNameKey}: '${this.resourceName}',`;
 
       const updatedImports = content.replace(
-        /(import.*?;\n)(\nexport const EXPORTED_MODELS)/,
+        /(import\s+{[^}]+}\s+from\s+'[^']+';(?:\n)?)+(\nexport const EXPORTED_MODELS)/,
         `$1${importStatement}\n$2`,
       );
 
       const updatedExports = updatedImports.replace(
         /(export const EXPORTED_MODELS = \[)([\s\S]*?)(\];)/,
-        `$1$2, ${this.resourceName}$3`,
+        (_match, p1, p2, p3) => `${p1}${p2}${p2.trim() ? ', ' : ''}${this.resourceName}${p3}`,
       );
 
       const finalContent = updatedExports.replace(
