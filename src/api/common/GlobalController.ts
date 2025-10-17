@@ -10,26 +10,16 @@ import { ERROR_INVALID_ID, ERROR_RESOURCE_NOT_FOUND } from '@constants/errors/co
 import type { ApiSuccessResponse } from '@interfaces/http.js';
 import { NotFoundError, ValidationError } from '@constants/errors/errors.js';
 import type { NextFunction, Request, Response } from 'express';
-import type { DeepPartial } from 'typeorm';
 import { isValidId } from '@utils/isValidId.js';
 import { parseInclude } from '@utils/parseInclude.js';
 
-export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDTO> {
-  protected service: BaseService<T, CreateDTO, UpdateDTO>;
+export abstract class BaseController<T extends EntityWithId, CreateEntityDTO, UpdateEntityDTO> {
+  protected service: BaseService<T, CreateEntityDTO, UpdateEntityDTO>;
   protected resourceName: string;
-  protected CreateDtoClass?: new (data: DeepPartial<T>) => CreateDTO;
-  protected UpdateDtoClass?: new (data: DeepPartial<T>) => UpdateDTO;
 
-  constructor(
-    service: BaseService<T, CreateDTO, UpdateDTO>,
-    resourceName: string,
-    CreateDTO: new (data: DeepPartial<T>) => CreateDTO,
-    UpdateDTO: new (data: DeepPartial<T>) => UpdateDTO,
-  ) {
+  constructor(service: BaseService<T, CreateEntityDTO, UpdateEntityDTO>, resourceName: string) {
     this.service = service;
     this.resourceName = resourceName;
-    this.CreateDtoClass = CreateDTO;
-    this.UpdateDtoClass = UpdateDTO;
   }
 
   async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -74,7 +64,7 @@ export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDT
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const data: CreateDTO = this.CreateDtoClass ? new this.CreateDtoClass(req.body) : req.body;
+      const data: CreateEntityDTO = req.body as CreateEntityDTO;
       const resource = await this.service.create(data);
 
       const response: ApiSuccessResponse<T> = {
@@ -90,7 +80,7 @@ export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDT
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const data: UpdateDTO = this.UpdateDtoClass ? new this.UpdateDtoClass(req.body) : req.body;
+      const data: UpdateEntityDTO = req.body as UpdateEntityDTO;
 
       if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);

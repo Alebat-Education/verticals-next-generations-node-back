@@ -24,9 +24,9 @@ import { VALIDATION_MESSAGES } from '@constants/errors/validation/messages.js';
 
 export class CreateProductDto {
   @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Document ID') })
-  // @IsNotEmpty({ message: VALIDATION_MESSAGES.FIELD_REQUIRED('Document ID') })
+  @IsOptional()
   @Length(1, 255, { message: VALIDATION_MESSAGES.FIELD_LENGTH_BETWEEN('Document ID', 1, 255) })
-  documentId!: string;
+  documentId?: string;
 
   @IsString({ message: VALIDATION_MESSAGES.FIELD_MUST_BE_STRING('Title') })
   @IsNotEmpty({ message: VALIDATION_MESSAGES.FIELD_REQUIRED('Title') })
