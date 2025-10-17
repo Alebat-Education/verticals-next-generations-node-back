@@ -15,13 +15,13 @@ import { isValidId } from '@utils/isValidId.js';
 import { parseInclude } from '@utils/parseInclude.js';
 
 export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDTO> {
-  protected service: BaseService<T>;
+  protected service: BaseService<T, CreateDTO, UpdateDTO>;
   protected resourceName: string;
   protected CreateDtoClass?: new (data: DeepPartial<T>) => CreateDTO;
   protected UpdateDtoClass?: new (data: DeepPartial<T>) => UpdateDTO;
 
   constructor(
-    service: BaseService<T>,
+    service: BaseService<T, CreateDTO, UpdateDTO>,
     resourceName: string,
     CreateDTO: new (data: DeepPartial<T>) => CreateDTO,
     UpdateDTO: new (data: DeepPartial<T>) => UpdateDTO,
@@ -74,7 +74,7 @@ export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDT
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const data: DeepPartial<T> = this.CreateDtoClass ? new this.CreateDtoClass(req.body) : req.body;
+      const data: CreateDTO = this.CreateDtoClass ? new this.CreateDtoClass(req.body) : req.body;
       const resource = await this.service.create(data);
 
       const response: ApiSuccessResponse<T> = {
@@ -90,7 +90,7 @@ export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDT
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const data: DeepPartial<T> = this.UpdateDtoClass ? new this.UpdateDtoClass(req.body) : req.body;
+      const data: UpdateDTO = this.UpdateDtoClass ? new this.UpdateDtoClass(req.body) : req.body;
 
       if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);

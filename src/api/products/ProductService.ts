@@ -1,9 +1,11 @@
 import { Product } from '@/api/products/productModel.js';
+import type { CreateProductDto } from '@/api/products/dtos/CreateProductDto.js';
+import type { UpdateProductDto } from '@/api/products/dtos/UpdateProductDto.js';
 import { BaseService } from '@common/GlobalService.js';
 import { AppDataSource } from '@config/connection.js';
 import { ERROR_DATA_SOURCE_NOT_INITIALIZED } from '@constants/errors/server.js';
 
-class ProductService extends BaseService<Product> {
+class ProductService extends BaseService<Product, CreateProductDto, UpdateProductDto> {
   constructor() {
     if (!AppDataSource || !AppDataSource.isInitialized) {
       throw new Error(ERROR_DATA_SOURCE_NOT_INITIALIZED);
