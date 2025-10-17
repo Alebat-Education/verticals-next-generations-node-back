@@ -14,6 +14,7 @@
     "lint": "eslint \"src/**/*.{ts,js}\"",
     "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
     "format": "prettier --write 'src/**/*.{ts,js,json,md}'",
+    "generate:resource": "tsx scripts/generators/resource.generator.ts",
     "prepare": "husky"
   },
   "keywords": [
