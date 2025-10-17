@@ -9,13 +9,13 @@ export default [
   },
   {
     files: ['**/*.ts', '**/*.js'],
-    ignores: ['commitlint.config.ts'],
+    ignores: ['commitlint.config.ts', 'vitest.config.ts'],
     languageOptions: {
       parser: parserTypeScript,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json',
+        project: ['./tsconfig.json'],
       },
       globals: {
         console: 'readonly',

@@ -6,7 +6,7 @@
     "moduleResolution": "NodeNext",
     "target": "esnext",
     "lib": ["esnext"],
-    "types": ["node"],
+    "types": ["node", "vitest/globals"],
     "esModuleInterop": true,
     "noUnusedParameters": true,
     "experimentalDecorators": true,

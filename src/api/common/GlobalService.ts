@@ -13,7 +13,11 @@ export interface EntityWithId {
   id: number | string;
 }
 
-export abstract class BaseService<T extends EntityWithId> {
+export abstract class BaseService<
+  T extends EntityWithId,
+  CreateEntityDTO extends DeepPartial<T> = DeepPartial<T>,
+  UpdateEntityDTO extends DeepPartial<T> = DeepPartial<T>,
+> {
   protected readonly repository: Repository<T>;
   protected readonly entityClass: Function;
 
@@ -47,12 +51,12 @@ export abstract class BaseService<T extends EntityWithId> {
     });
   }
 
-  async create(data: DeepPartial<T>): Promise<T> {
+  async create(data: CreateEntityDTO): Promise<T> {
     const entity = this.repository.create(data);
     return this.repository.save(entity);
   }
 
-  async update(id: number | string, data: DeepPartial<T>): Promise<T | null> {
+  async update(id: number | string, data: UpdateEntityDTO): Promise<T | null> {
     await this.repository.update(id, data as any);
     return this.findById(id);
   }
