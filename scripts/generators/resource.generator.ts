@@ -43,6 +43,16 @@ const toCamelCase = (str: string): string => {
   return pascal.charAt(0).toLowerCase() + pascal.slice(1);
 };
 
+const toPlural = (str: string): string => {
+  if (str.endsWith('s') || str.endsWith('x') || str.endsWith('z')) {
+    return `${str}es`;
+  }
+  if (str.endsWith('y') && !/[aeiou]y$/.test(str)) {
+    return `${str.slice(0, -1)}ies`;
+  }
+  return `${str}s`;
+};
+
 class FileWriter {
   static async createDirectory(dirPath: string): Promise<void> {
     try {
@@ -75,11 +85,13 @@ export class ResourceGenerator {
   private readonly baseDir: string;
   private readonly resourceName: string;
   private readonly resourceNameLower: string;
+  private readonly resourceNamePlural: string;
 
   constructor(private options: GeneratorOptions) {
     this.baseDir = path.join(__dirname, '../../src');
     this.resourceName = toPascalCase(options.resourceName);
     this.resourceNameLower = toCamelCase(options.resourceName);
+    this.resourceNamePlural = toPlural(this.resourceNameLower);
   }
 
   async generate(): Promise<void> {
@@ -108,11 +120,11 @@ export class ResourceGenerator {
       console.log('\n✨ Resource generated successfully!\n');
       console.log('📝 Next steps:');
       console.log(
-        `   1. Review and customize the entity in src/api/${this.resourceNameLower}/${this.resourceNameLower}Model.ts`,
+        `   1. Review and customize the entity in src/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.ts`,
       );
       console.log(`   2. Verify the route registration in src/utils/setupRoutes.ts`);
       console.log(`   3. Verify the model import in src/constants/common/models.ts`);
-      console.log(`   4. Create DTOs in src/api/${this.resourceNameLower}/dtos/ if needed`);
+      console.log(`   4. Create DTOs in src/api/${this.resourceNamePlural}/dtos/ if needed`);
       console.log(`   5. Run migrations if needed\n`);
     } catch (error) {
       console.error('❌ Error generating resource:', error);
@@ -121,7 +133,7 @@ export class ResourceGenerator {
   }
 
   private async generateController(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNameLower);
+    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
     const controllerPath = path.join(resourceDir, `${this.resourceNameLower}Controller.ts`);
 
     if (await FileWriter.fileExists(controllerPath)) {
@@ -130,11 +142,14 @@ export class ResourceGenerator {
     }
 
     await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(controllerPath, FILES.CONTROLLER_TEMPLATE(this.resourceName, this.resourceNameLower));
+    await FileWriter.writeFile(
+      controllerPath,
+      FILES.CONTROLLER_TEMPLATE(this.resourceName, this.resourceNameLower, this.resourceNamePlural),
+    );
   }
 
   private async generateService(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNameLower);
+    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
     const servicePath = path.join(resourceDir, `${this.resourceNameLower}Service.ts`);
 
     if (await FileWriter.fileExists(servicePath)) {
@@ -143,11 +158,14 @@ export class ResourceGenerator {
     }
 
     await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(servicePath, FILES.SERVICE_TEMPLATE(this.resourceName, this.resourceNameLower));
+    await FileWriter.writeFile(
+      servicePath,
+      FILES.SERVICE_TEMPLATE(this.resourceName, this.resourceNameLower, this.resourceNamePlural),
+    );
   }
 
   private async generateRoutes(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNameLower);
+    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
     const routesPath = path.join(resourceDir, `${this.resourceNameLower}Routes.ts`);
 
     if (await FileWriter.fileExists(routesPath)) {
@@ -156,11 +174,14 @@ export class ResourceGenerator {
     }
 
     await FileWriter.createDirectory(resourceDir);
-    await FileWriter.writeFile(routesPath, FILES.ROUTES_TEMPLATE(this.resourceName, this.resourceNameLower));
+    await FileWriter.writeFile(
+      routesPath,
+      FILES.ROUTES_TEMPLATE(this.resourceName, this.resourceNameLower, this.resourceNamePlural),
+    );
   }
 
   private async generateEntity(): Promise<void> {
-    const resourceDir = path.join(this.baseDir, 'api', this.resourceNameLower);
+    const resourceDir = path.join(this.baseDir, 'api', this.resourceNamePlural);
     const entityPath = path.join(resourceDir, `${this.resourceNameLower}Model.ts`);
 
     if (await FileWriter.fileExists(entityPath)) {
@@ -189,13 +210,13 @@ export class ResourceGenerator {
         return;
       }
 
-      const routeImport = `${routeKey}: () => import('@/api/${this.resourceNameLower}/${this.resourceNameLower}Routes.js'),`;
+      const routeImport = `${routeKey}: () => import('@/api/${this.resourceNamePlural}/${this.resourceNameLower}Routes.js'),`;
       const updatedRoutes = content.replace(
         /(const PRODUCTION_ROUTES = \{[\s\S]*?)(\/\/ Add more routes here as needed)/,
         `$1    ${routeImport}\n    $2`,
       );
 
-      const pathEntry = `${routeKey}: '/${this.resourceNameLower}',`;
+      const pathEntry = `${routeKey}: '/${this.resourceNamePlural}',`;
       const updatedPaths = updatedRoutes.replace(
         /(const PATHS = \{[\s\S]*?)(\/\/ Add more paths here as needed)/,
         `$1    ${pathEntry}\n    $2`,
@@ -222,12 +243,12 @@ export class ResourceGenerator {
     try {
       const content = await fs.readFile(modelsConstantsPath, 'utf-8');
 
-      if (content.includes(`from '@/api/${this.resourceNameLower}/${this.resourceNameLower}Model.js'`)) {
+      if (content.includes(`from '@/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.js'`)) {
         console.log(`ℹ️  Model ${this.resourceName} already imported in models.ts`);
         return;
       }
 
-      const importStatement = `import { ${this.resourceName} } from '@/api/${this.resourceNameLower}/${this.resourceNameLower}Model.js';`;
+      const importStatement = `import { ${this.resourceName} } from '@/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.js';`;
       const updatedImports = content.replace(
         /(import.*?;\n)(\nexport const EXPORTED_MODELS)/,
         `$1${importStatement}\n$2`,
