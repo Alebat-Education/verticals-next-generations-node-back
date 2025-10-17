@@ -189,14 +189,11 @@ export class ResourceGenerator {
         return;
       }
 
-      const importStatement = `import { ${this.resourceName} } from '@/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.js';`;
+      const importStatement = `import { ${this.resourceName} } from '@/api/${this.resourceNamePlural}/${this.resourceNameLower}Model.js';\n`;
       const modelNameKey = this.resourceName.toUpperCase();
-      const modelNameEntry = `  ${modelNameKey}: '${this.resourceName}',`;
+      const modelNameEntry = `  ${modelNameKey}: '${this.resourceName}',\n`;
 
-      const updatedImports = content.replace(
-        /(import\s+{[^}]+}\s+from\s+'[^']+';(?:\n)?)+(\nexport const EXPORTED_MODELS)/,
-        `$1${importStatement}\n$2`,
-      );
+      const updatedImports = content.replace(/(\n)(export const EXPORTED_MODELS)/, `${importStatement}$1$2`);
 
       const updatedExports = updatedImports.replace(
         /(export const EXPORTED_MODELS = \[)([\s\S]*?)(\];)/,
@@ -204,8 +201,8 @@ export class ResourceGenerator {
       );
 
       const finalContent = updatedExports.replace(
-        /(export const MODELS_NAMES = \{[\s\S]*?)(} as const;)/,
-        `$1${modelNameEntry}\n$2`,
+        /(export const MODELS_NAMES = \{[\s\S]*?)(\n} as const;)/,
+        `$1\n${modelNameEntry}$2`,
       );
 
       await fs.writeFile(modelsConstantsPath, finalContent, 'utf-8');
