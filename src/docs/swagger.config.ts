@@ -1,4 +1,7 @@
 import type { Options } from 'swagger-jsdoc';
+import { generateSchemasFromDtos, commonSchemas } from '@docs/schemaGenerator.js';
+
+const generatedSchemas = generateSchemasFromDtos();
 
 export const swaggerOptions: Options = {
   definition: {
@@ -15,10 +18,37 @@ export const swaggerOptions: Options = {
       },
       {
         name: 'Products',
-        description: 'Product management',
+        description: 'Product management - CRUD operations',
       },
     ],
     components: {
+      parameters: {
+        includeQuery: {
+          in: 'query',
+          name: 'include',
+          schema: {
+            type: 'string',
+          },
+          description: 'Comma-separated list of relations to include (e.g., "categories,components")',
+          example: 'categories',
+          required: false,
+        },
+        idParam: {
+          in: 'path',
+          name: 'id',
+          required: true,
+          schema: {
+            type: 'integer',
+            minimum: 1,
+          },
+          description: 'Resource ID',
+          example: 1,
+        },
+      },
+      schemas: {
+        ...commonSchemas,
+        ...generatedSchemas,
+      },
       securitySchemes: {
         bearerAuth: {
           type: 'http',
