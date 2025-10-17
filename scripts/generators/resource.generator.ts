@@ -76,7 +76,6 @@ class FileWriter {
 
   static async writeFile(filePath: string, content: string): Promise<void> {
     await fs.writeFile(filePath, content.trim(), 'utf-8');
-    logger.info(`Created: ${filePath}`);
   }
 
   static async fileExists(filePath: string): Promise<boolean> {
@@ -222,7 +221,6 @@ export class ResourceGenerator {
       const finalContent = updatedPaths.replace(/(try \{[\s\S]*?app\.use\(PATHS\.\w+[^;]*\);)/, `$1\n    ${appUse}`);
 
       await fs.writeFile(setupRoutesPath, finalContent, 'utf-8');
-      logger.info(`Updated: ${setupRoutesPath}`);
     } catch (error) {
       logger.error({ err: error }, 'Error updating setupRoutes.ts');
     }
@@ -264,7 +262,6 @@ export class ResourceGenerator {
       );
 
       await fs.writeFile(modelsConstantsPath, finalContent, 'utf-8');
-      logger.info(`Updated: ${modelsConstantsPath}`);
     } catch (error) {
       logger.error({ err: error }, 'Error updating models.ts');
     }
