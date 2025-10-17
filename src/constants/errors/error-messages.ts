@@ -6,4 +6,17 @@ export const ERROR_MESSAGES = {
   CONFLICT: 'Conflict',
   INTERNAL_SERVER_ERROR: 'Internal server error',
   SERVICE_UNAVAILABLE: 'Service unavailable',
+  TOKEN_EXPIRED: 'Token expired',
+  TOKEN_MALFORMED: 'Token malformed',
+  TOKEN_INVALID: 'Invalid token',
+  JWT_SECRET_UNDEFINED: 'JWT_SECRET is not defined in environment variables',
+  INVALID_CREDENTIALS: 'Invalid credentials',
+  TOO_MANY_REQUESTS: 'Too many requests, please try again later.',
+  RETRY_AFTER: '1 minute',
 } as const;
+
+export const VALIDATION_LANGUAGE = {
+  NOT_SUPPORTED: 'Language not supported. Supported languages are: es, en, fr',
+};
+
+export const SUPPORTED_LANGUAGES = ['es', 'en', 'fr'] as const;

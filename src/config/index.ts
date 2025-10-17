@@ -20,6 +20,9 @@ export const CONFIG = {
   // JWT
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+  RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'),
+  RATE_LIMIT_MAX_AUTH_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_AUTH_REQUESTS || '5'),
+  RATE_LIMIT_MAX_API_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_API_REQUESTS || '100'),
 
   // CORS
   CORS_ORIGIN: process.env.CORS_ORIGIN,

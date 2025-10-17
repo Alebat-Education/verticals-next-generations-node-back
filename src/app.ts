@@ -4,12 +4,14 @@ import cors from 'cors';
 import { httpLogger } from '@config/logger.js';
 import morgan from 'morgan';
 import { setupSwagger } from '@docs/swagger.setup.js';
+import { apiRateLimiter } from '@middleware/rateLimiter.js';
 
 const app: Express = express();
 app.use(httpLogger);
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
+app.use(apiRateLimiter);
 
 setupSwagger(app);
 
