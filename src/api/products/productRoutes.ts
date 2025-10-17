@@ -1,15 +1,14 @@
 import { productController } from '@/api/products/productController.js';
 import type { Router as ExpressRouter } from 'express';
 import { Router } from 'express';
-import { ValidateBody, ValidateQuery, ValidateParams } from '@middleware/validation-pipe.js';
+import { ValidateBody, ValidateParams } from '@middleware/validation-pipe.js';
 import { CreateProductDto } from '@/api/products/dtos/CreateProductDto.js';
 import { UpdateProductDto } from '@/api/products/dtos/UpdateProductDto.js';
-import { QueryProductDto } from '@/api/products/dtos/QueryProductDto.js';
 import { ParamIdDto } from '@common/dtos/ParamIdDto.js';
 
 const router: ExpressRouter = Router();
 
-router.get('/', ValidateQuery(QueryProductDto), (req, res, next) => productController.findAll(req, res, next));
+router.get('/', (req, res, next) => productController.findAll(req, res, next));
 
 router.get('/:id', ValidateParams(ParamIdDto), (req, res, next) => productController.findOne(req, res, next));
 
