@@ -14,13 +14,22 @@ import type { DeepPartial } from 'typeorm';
 import { isValidId } from '@utils/isValidId.js';
 import { parseInclude } from '@utils/parseInclude.js';
 
-export abstract class BaseController<T extends EntityWithId> {
+export abstract class BaseController<T extends EntityWithId, CreateDTO, UpdateDTO> {
   protected service: BaseService<T>;
   protected resourceName: string;
+  protected CreateDtoClass?: new (data: DeepPartial<T>) => CreateDTO;
+  protected UpdateDtoClass?: new (data: DeepPartial<T>) => UpdateDTO;
 
-  constructor(service: BaseService<T>, resourceName: string) {
+  constructor(
+    service: BaseService<T>,
+    resourceName: string,
+    CreateDTO: new (data: DeepPartial<T>) => CreateDTO,
+    UpdateDTO: new (data: DeepPartial<T>) => UpdateDTO,
+  ) {
     this.service = service;
     this.resourceName = resourceName;
+    this.CreateDtoClass = CreateDTO;
+    this.UpdateDtoClass = UpdateDTO;
   }
 
   async findAll(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -65,7 +74,7 @@ export abstract class BaseController<T extends EntityWithId> {
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const data: DeepPartial<T> = req.body;
+      const data: DeepPartial<T> = this.CreateDtoClass ? new this.CreateDtoClass(req.body) : req.body;
       const resource = await this.service.create(data);
 
       const response: ApiSuccessResponse<T> = {
@@ -81,7 +90,7 @@ export abstract class BaseController<T extends EntityWithId> {
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const data: DeepPartial<T> = req.body;
+      const data: DeepPartial<T> = this.UpdateDtoClass ? new this.UpdateDtoClass(req.body) : req.body;
 
       if (!id || !isValidId(id)) {
         throw new ValidationError(ERROR_INVALID_ID);
